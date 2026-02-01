@@ -7,7 +7,7 @@ void SpeedDistribute_Four_SteeringWheel(ST_Nav *p_nav)
     {   // 以车身坐标系操控
         fpQ = PI/2;
     }
-	else{
+		else{
         // 以全场坐标系操控
         fpQ = ConvertAngle(stRobot.stPos.fpPosQ * RADIAN_10);
     }
@@ -16,6 +16,8 @@ void SpeedDistribute_Four_SteeringWheel(ST_Nav *p_nav)
     // 角速度死区
     if (fabs(expect_robot_local_Velt.fpW) < 0.1f) // rad/s
         expect_robot_local_Velt.fpW = 0.f;
+		
+		
 
     // 左右侧电机转向正方向相反！！
     steer_velt.leftup = powf(powf(expect_robot_local_Velt.fpX - UP_WHEEL_TO_ROBOT * expect_robot_local_Velt.fpW * sinf(UP_ANGLE), 2) + powf(expect_robot_local_Velt.fpY - UP_WHEEL_TO_ROBOT * expect_robot_local_Velt.fpW * cosf(UP_ANGLE), 2), 0.5) / R_WHEEL * RUN_GEAR_RATIO;

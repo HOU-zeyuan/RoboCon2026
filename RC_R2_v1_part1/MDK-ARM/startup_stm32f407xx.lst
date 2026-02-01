@@ -855,7 +855,7 @@ include -I../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../Middlew
 ares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I../Drivers/CMSIS/Devi
 ce/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I.\RTE\_RC_R2_v1_part1 -ID:
 \Keil_v5\ARM\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include --predefine="__UVISION_VE
-RSION SETA 539" --predefine="_RTE_ SETA 1" --predefine="STM32F407xx SETA 1" --p
+RSION SETA 538" --predefine="_RTE_ SETA 1" --predefine="STM32F407xx SETA 1" --p
 redefine="_RTE_ SETA 1" --list=startup_stm32f407xx.lst startup_stm32f407xx.s
 
 

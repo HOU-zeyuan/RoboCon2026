@@ -44,7 +44,7 @@ void Foot_WorkLoop()
         foot_motor_runtime_flag = 0;
         foot.up_tor_feedforward_flag = 0;
         foot.down_tor_feedforward_flag = 0;
-        j60_motor_cmd_down.kp_ = 27.f, j60_motor_cmd_down.kd_ = 4.f;
+        j60_motor_cmd_down.kp_ = 30.f, j60_motor_cmd_down.kd_ = 4.f;
         j60_motor_cmd_down.j60_td.r = 50000.f, j60_motor_cmd_down.j60_td.h = 0.001f, j60_motor_cmd_down.j60_td.T = 0.001f;
         go1_send_left.K_P = 0.95f, go1_send_left.K_W = 0.06f;
         go1_send_left.td.r = 3000.f, go1_send_left.td.h = 0.001f, go1_send_left.td.T = 0.001f;
@@ -93,20 +93,24 @@ void Foot_WorkLoop()
                 nav.auto_path.up_down_state = UP_APPROACH_1;
                 // 降低加速过程的目标速度，防止前脚撞台阶
             }
+						if (Foot_DT35_distance_check(1))
+						{
+								foot.down_tor_feedforward_flag = 1;
+                j60_motor_cmd_down.kp_ = 500.f, j60_motor_cmd_down.kd_ = 5.f;
+                j60_motor_cmd_down.j60_td.r = 10000000000.f, j60_motor_cmd_down.j60_td.h = 0.001f, j60_motor_cmd_down.j60_td.T = 0.001f;
+								foot.down_aim_angle = 20.f / 45.f + 1.87f;
+						}
             if (Foot_DT35_distance_check(0))
             {
-                foot.down_tor_feedforward_flag = 1;
-                j60_motor_cmd_down.kp_ = 150.f, j60_motor_cmd_down.kd_ = 5.f;
-                j60_motor_cmd_down.j60_td.r = 1000000.f, j60_motor_cmd_down.j60_td.h = 0.001f, j60_motor_cmd_down.j60_td.T = 0.001f;
-                go1_send_left.K_P = 2.f, go1_send_left.K_W = 0.1f;
+                go1_send_left.K_P = 2.4f, go1_send_left.K_W = 0.1f;
                 go1_send_left.td.r = 2000000.f, go1_send_left.td.h = 0.001f, go1_send_left.td.T = 0.001f;
-                go1_send_right.K_P = 2.f, go1_send_right.K_W = 0.1f;
+                go1_send_right.K_P = 2.4f, go1_send_right.K_W = 0.1f;
                 go1_send_right.td.r = 2000000.f, go1_send_right.td.h = 0.001f, go1_send_right.td.T = 0.001f;
-                foot.leftup_aim_angle = (foot.up_foot_circle_count * 360.f + 85.f) / 9.0515f + 21.33f + go1_left_0;
-                foot.rightup_aim_angle = (foot.up_foot_circle_count * 360.f + 85.f) / -9.0515f - 21.33f + go1_right_0;
-                foot.down_aim_angle = 85.f / 45.f + 1.87f;
+                foot.leftup_aim_angle = (foot.up_foot_circle_count * 360.f + 88.f) / 9.0515f + 21.33f + go1_left_0;
+                foot.rightup_aim_angle = (foot.up_foot_circle_count * 360.f + 88.f) / -9.0515f - 21.33f + go1_right_0;
+								foot.down_aim_angle = 90.f / 45.f + 1.87f;
             }
-            if (fabs(go1_recv_left.Pos - foot.leftup_aim_angle) < 1.266f && fabs(go1_recv_right.Pos - foot.rightup_aim_angle) < 1.266f && fabs(j60_motor_data_down.position_ - foot.down_aim_angle) < 0.3f && j60_motor_cmd_down.kp_ == 150.f)
+            if (fabs(go1_recv_left.Pos - foot.leftup_aim_angle) < 1.266f && fabs(go1_recv_right.Pos - foot.rightup_aim_angle) < 1.266f && fabs(j60_motor_data_down.position_ - foot.down_aim_angle) < 0.3f && j60_motor_cmd_down.kp_ == 500.f)
             { // 到达目标角度 && 通过dt35的检测
                 foot.foot_up = UP2;
                 foot_motor_runtime_flag = 0;
@@ -124,13 +128,13 @@ void Foot_WorkLoop()
             nav.nav_state = SEMIAUTO_UP_DOWN_STAIRS;
             nav.auto_path.up_down_state = UP_APPROACH_2;
             // 无论是否成功上台阶，及时调整温和的pid参数，防止j60过热使能
-            j60_motor_cmd_down.kp_ = 24.f, j60_motor_cmd_down.kd_ = 4.f;
+            j60_motor_cmd_down.kp_ = 35.f, j60_motor_cmd_down.kd_ = 4.f;
             j60_motor_cmd_down.j60_td.r = 50000.f, j60_motor_cmd_down.j60_td.h = 0.001f, j60_motor_cmd_down.j60_td.T = 0.001f;
-            go1_send_left.K_P = 0.9f, go1_send_left.K_W = 0.07f;
+            go1_send_left.K_P = 1.f, go1_send_left.K_W = 0.08f;
             go1_send_left.td.r = 3000.f, go1_send_left.td.h = 0.001f, go1_send_left.td.T = 0.001f;
-            go1_send_right.K_P = 0.9f, go1_send_right.K_W = 0.07f;
+            go1_send_right.K_P = 1.f, go1_send_right.K_W = 0.08f;
             go1_send_right.td.r = 3000.f, go1_send_right.td.h = 0.001f, go1_send_right.td.T = 0.001f;
-            if (foot_motor_runtime_flag == 1 && foot_motor_runtime > 5)
+            if (foot_motor_runtime_flag == 1 && foot_motor_runtime > 25)
             { // 红外行程开关检测到前轮台阶10ms后
                 foot.up_tor_feedforward_flag = 0;
                 foot.down_tor_feedforward_flag = 1;
@@ -153,7 +157,7 @@ void Foot_WorkLoop()
                 nav.nav_state = SEMIAUTO_UP_DOWN_STAIRS;
                 nav.auto_path.up_down_state = UP_UPSTAIRS;
             }
-            if (foot_motor_runtime > 280)
+            if (foot_motor_runtime > 270)
             {
                 foot.up_tor_feedforward_flag = 0;
                 foot.down_tor_feedforward_flag = 0;
@@ -234,11 +238,11 @@ void Foot_WorkLoop()
             }
             foot.up_tor_feedforward_flag = 0;
             foot.down_tor_feedforward_flag = 1;
-            j60_motor_cmd_down.kp_ = 24.f, j60_motor_cmd_down.kd_ = 4.f;
+            j60_motor_cmd_down.kp_ = 30.f, j60_motor_cmd_down.kd_ = 4.f;
             j60_motor_cmd_down.j60_td.r = 50000.f, j60_motor_cmd_down.j60_td.h = 0.001f, j60_motor_cmd_down.j60_td.T = 0.001f;
-            go1_send_left.K_P = 0.9f, go1_send_left.K_W = 0.07f;
+            go1_send_left.K_P = 1.f, go1_send_left.K_W = 0.08f;
             go1_send_left.td.r = 3000.f, go1_send_left.td.h = 0.001f, go1_send_left.td.T = 0.001f;
-            go1_send_right.K_P = 0.9f, go1_send_right.K_W = 0.07f;
+            go1_send_right.K_P = 1.f, go1_send_right.K_W = 0.08f;
             go1_send_right.td.r = 3000.f, go1_send_right.td.h = 0.001f, go1_send_right.td.T = 0.001f;
             foot.leftup_aim_angle = (foot.up_foot_circle_count * 360.f - 190.f) / 9.0515f + 21.33f + go1_left_0;
             foot.rightup_aim_angle = (foot.up_foot_circle_count * 360.f - 190.f) / -9.0515f - 21.33f + go1_right_0;
@@ -260,11 +264,11 @@ void Foot_WorkLoop()
             {
                 foot.up_tor_feedforward_flag = 1;
                 foot.down_tor_feedforward_flag = 1;
-                j60_motor_cmd_down.kp_ = 24.f, j60_motor_cmd_down.kd_ = 4.f;
+                j60_motor_cmd_down.kp_ = 30.f, j60_motor_cmd_down.kd_ = 4.f;
                 j60_motor_cmd_down.j60_td.r = 50000.f, j60_motor_cmd_down.j60_td.h = 0.001f, j60_motor_cmd_down.j60_td.T = 0.001f;
-                go1_send_left.K_P = 0.9f, go1_send_left.K_W = 0.07f;
+                go1_send_left.K_P = 1.f, go1_send_left.K_W = 0.08f;
                 go1_send_left.td.r = 3000.f, go1_send_left.td.h = 0.001f, go1_send_left.td.T = 0.001f;
-                go1_send_right.K_P = 0.9f, go1_send_right.K_W = 0.07f;
+                go1_send_right.K_P = 1.f, go1_send_right.K_W = 0.08f;
                 go1_send_right.td.r = 3000.f, go1_send_right.td.h = 0.001f, go1_send_right.td.T = 0.001f;
                 foot.leftup_aim_angle = (foot.up_foot_circle_count * 360.f - 270.f) / 9.0515f + 21.33f + go1_left_0;
                 foot.rightup_aim_angle = (foot.up_foot_circle_count * 360.f - 270.f) / -9.0515f - 21.33f + go1_right_0;
@@ -276,7 +280,7 @@ void Foot_WorkLoop()
                 foot_motor_runtime_flag = 0;
                 nav.auto_path.run_time_flag = 0;
                 nav.auto_path.up_down_state = UP_DOWN_STATE_OFF;
-                //nav.nav_state = RC_LOCAL;
+                // nav.nav_state = RC_LOCAL;
             }
             break;
 
@@ -288,16 +292,16 @@ void Foot_WorkLoop()
             }
             foot.up_tor_feedforward_flag = 1;
             foot.down_tor_feedforward_flag = 1;
-            j60_motor_cmd_down.kp_ = 24.f, j60_motor_cmd_down.kd_ = 4.f;
+            j60_motor_cmd_down.kp_ = 30.f, j60_motor_cmd_down.kd_ = 4.f;
             j60_motor_cmd_down.j60_td.r = 8.f, j60_motor_cmd_down.j60_td.h = 0.001f, j60_motor_cmd_down.j60_td.T = 0.001f;
-            go1_send_left.K_P = 0.9f, go1_send_left.K_W = 0.07f;
+            go1_send_left.K_P = 1.f, go1_send_left.K_W = 0.08f;
             go1_send_left.td.r = 35.f, go1_send_left.td.h = 0.001f, go1_send_left.td.T = 0.001f;
-            go1_send_right.K_P = 0.9f, go1_send_right.K_W = 0.07f;
+            go1_send_right.K_P = 1.f, go1_send_right.K_W = 0.08f;
             go1_send_right.td.r = 35.f, go1_send_right.td.h = 0.001f, go1_send_right.td.T = 0.001f;
             foot.leftup_aim_angle = (foot.up_foot_circle_count * 360.f - 350.f) / 9.0515f + 21.33f + go1_left_0;
             foot.rightup_aim_angle = (foot.up_foot_circle_count * 360.f - 350.f) / -9.0515f - 21.33f + go1_right_0;
             foot.down_aim_angle = 20.f / 45.f + 1.87f;
-            if (foot_motor_runtime > 900)
+            if (foot_motor_runtime > 1000)
             {
                 // 定时关闭重力前馈，防止小脚因重力前馈阻碍到达目标位置
                 foot.up_tor_feedforward_flag = 0;
@@ -364,8 +368,8 @@ void Foot_WorkLoop()
         }
         foot.up_tor_feedforward_flag = 1;
         foot.down_tor_feedforward_flag = 1;
-        j60_motor_cmd_down.kp_ = 150.f, j60_motor_cmd_down.kd_ = 5.f;
-        j60_motor_cmd_down.j60_td.r = 1000000.f, j60_motor_cmd_down.j60_td.h = 0.001f, j60_motor_cmd_down.j60_td.T = 0.001f;
+        j60_motor_cmd_down.kp_ = 200.f, j60_motor_cmd_down.kd_ = 5.f;
+        j60_motor_cmd_down.j60_td.r = 100000000.f, j60_motor_cmd_down.j60_td.h = 0.001f, j60_motor_cmd_down.j60_td.T = 0.001f;
         go1_send_left.K_P = 2.f, go1_send_left.K_W = 0.1f;
         go1_send_left.td.r = 2000000.f, go1_send_left.td.h = 0.001f, go1_send_left.td.T = 0.001f;
         go1_send_right.K_P = 2.f, go1_send_right.K_W = 0.1f;
@@ -418,17 +422,17 @@ bool Foot_DT35_distance_check(uint8_t mode)
 {
     if (mode == 0)
     {
-        if (dt35_now.dt35_voltage_1 < 2200.f)
+        if (dt35_now.dt35_voltage_2 < 2850.f)
             return 1;
         else
             return 0;
     }
-}
-
-void balance_foot()
-{
-    float err = (go1_recv_left.Pos - go1_left_0) + (go1_recv_right.Pos - go1_right_0);
-    PID_Calc(&foot_balance_pid, 0.f, err);
-    go1_send_left.T -= foot_balance_pid.fpU;
-    go1_send_right.T -= foot_balance_pid.fpU;
+		
+		if (mode == 1)
+		{
+				if (dt35_now.dt35_voltage_2 < 3200.f)
+            return 1;
+        else
+            return 0;
+		}
 }

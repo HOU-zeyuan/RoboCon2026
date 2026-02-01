@@ -469,6 +469,7 @@ typedef struct
     uint8_t number;             // 自动路径选择第几个
     uint8_t number_permutation; // 路径组合选择第几个
     uint8_t number_point;       // 微调路径选择第几个
+    uint8_t get_block;
 } ST_Auto_Path;
 // 路线类型
 typedef enum
@@ -527,6 +528,7 @@ typedef enum
     NAV_PERMUTATION_PATH,    // 组合路径导航
     NAV_POINT_TO_POINT,      // 仅需要目标位置的实时反馈位置的点到点导航
     NAV_STOP
+
 } Nav_State;
 
 // 整个导航系统的主结构体
@@ -586,9 +588,13 @@ typedef struct
 // 梯形舵轮底盘 end
 
 // 小脚及上下台阶 start
-#define FOOT_LEFTUP_TOR_MAX 1.68f
-#define FOOT_RIGHTUP_TOR_MAX -1.68f
-#define FOOT_DOWN_TOR_MAX 11.5f
+#define FOOT_LEFTUP_TOR_MAX_1 1.75f
+#define FOOT_RIGHTUP_TOR_MAX_1 -1.75f
+#define FOOT_DOWN_TOR_MAX_1 15.5f
+
+#define FOOT_LEFTUP_TOR_MAX_2 1.78f
+#define FOOT_RIGHTUP_TOR_MAX_2 -1.78f
+#define FOOT_DOWN_TOR_MAX_2 16.75f
 
 #define MEIHUA_1 400.f
 #define MEIHUA_2 200.f
@@ -777,7 +783,6 @@ extern uint8_t leftup_init_flag, rightup_init_flag, leftdown_init_flag, rightdow
 
 extern J60_MotorDATA j60_motor_data_down;
 extern J60_MotorCMD j60_motor_cmd_down;
-extern float j60_down_tor;
 extern uint8_t j60_Tx[8];
 
 extern MotorCmd_t go1_send_left, go1_send_right;
@@ -797,9 +802,9 @@ extern chassis_run_des steer_velt, steer_pos, steer_pos_pre, friction_feedforwar
 
 extern FOOT foot;
 extern FOOT_G_feedforward foot_g_feedforward;
+extern uint8_t foot_up_G_feedforward_flag, foot_down_G_feedforward_flag;
 extern uint8_t foot_motor_runtime_flag;
 extern int foot_motor_runtime;
-extern ST_PID foot_balance_pid;
 
 extern uint16_t dt35_distance[5];
 extern ST_DT35 dt35_now;
@@ -817,14 +822,11 @@ extern long long int time_cnt, time_cnt_pre;
 extern ST_SYSTEM_MONITOR monitor;
 extern float vofa[20];
 
-extern uint8_t Rx_from_VET[40], Tx_to_VET[40];
 extern uint8_t Tx_complete_flag;
-extern UP_D_STATE up_d_state;
-extern UP_S_STATE up_s_state;
+extern volatile UP_D_STATE up_d_state;
+extern volatile UP_S_STATE up_s_state;
 extern DOWN_ROBOT_STATE down_robot_state;
 extern uint8_t down_flag;
-extern uint8_t up_d_flag;
-extern uint8_t up_s_flag;
 
 extern uint8_t vision_rec[49];
 extern uint8_t vision_tx[3];
@@ -844,10 +846,8 @@ extern uint8_t flag_vision_update;
 extern PATH_PERMUTATION Path_Permuta;
 extern PATH_POINT Path_Point;
 extern uint8_t flag_permutation_path; // 组合路径参数初始化标志位
-extern uint8_t flag_point_to_point, flag_point_end;
-extern uint32_t point_tim;
+extern uint8_t flag_point_to_point;
 extern bool flag_lock;
-extern ST_SYSTEM_MONITOR my_system_monitor;
 extern uint8_t down_tx[17];
 extern uint8_t down_rx[17];
 extern uint8_t tx_complete;
@@ -856,4 +856,9 @@ extern uint32_t TIM2_CNT_1; // s
 extern uint8_t flag_choose;
 extern uint8_t flag_zero;
 extern uint8_t flag_rotation;
+extern uint8_t flag_point_end;
+extern uint32_t point_tim;
+extern uint8_t flag_point_block;
+extern uint8_t flag_part_2_to_3;
+extern uint8_t flag_2_begin;
 #endif

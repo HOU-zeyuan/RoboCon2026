@@ -32,4 +32,6 @@ void Path_Permutation_Set_3_12(PATH_PERMUTATION *Path_Permuta,ST_Nav *p_nav); //
 void path_point_choose(ST_Nav *p_nav);
 void Point_Set_1(PATH_POINT *p_point);
 void Point_to_Point(PATH_POINT *p_point);
+
+void path_get_block(ST_Nav *p_nav);
 #endif

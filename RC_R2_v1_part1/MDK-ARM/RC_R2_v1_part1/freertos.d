@@ -1,7 +1,7 @@
 rc_r2_v1_part1\freertos.o: ../Core/Src/freertos.c
 rc_r2_v1_part1\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-rc_r2_v1_part1\freertos.o: D:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stddef.h
-rc_r2_v1_part1\freertos.o: D:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+rc_r2_v1_part1\freertos.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+rc_r2_v1_part1\freertos.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 rc_r2_v1_part1\freertos.o: ../Core/Inc/FreeRTOSConfig.h
 rc_r2_v1_part1\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 rc_r2_v1_part1\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
@@ -45,13 +45,13 @@ rc_r2_v1_part1\freertos.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uar
 rc_r2_v1_part1\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h
 rc_r2_v1_part1\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h
 rc_r2_v1_part1\freertos.o: ../bsp/global_declare.h
-rc_r2_v1_part1\freertos.o: D:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdbool.h
+rc_r2_v1_part1\freertos.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 rc_r2_v1_part1\freertos.o: ../bsp/motor_dji_sdk.h
 rc_r2_v1_part1\freertos.o: ../bsp/algorithm.h
-rc_r2_v1_part1\freertos.o: D:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\math.h
+rc_r2_v1_part1\freertos.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 rc_r2_v1_part1\freertos.o: ../bsp/can_bsp.h
 rc_r2_v1_part1\freertos.o: ../Core/Inc/can.h
-rc_r2_v1_part1\freertos.o: D:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
+rc_r2_v1_part1\freertos.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 rc_r2_v1_part1\freertos.o: ../bsp/motor_dji_sdk.h
 rc_r2_v1_part1\freertos.o: ../bsp/j60_sdk.h
 rc_r2_v1_part1\freertos.o: ../bsp/can_bsp.h
@@ -64,7 +64,6 @@ rc_r2_v1_part1\freertos.o: ../task/auto_path.h
 rc_r2_v1_part1\freertos.o: ../task/foot.h
 rc_r2_v1_part1\freertos.o: ../task/board_communicate.h
 rc_r2_v1_part1\freertos.o: ../Core/Inc/usart.h
-rc_r2_v1_part1\freertos.o: ../bsp/vofa.h
 rc_r2_v1_part1\freertos.o: ../task/vision.h
 rc_r2_v1_part1\freertos.o: ../task/locate.h
 rc_r2_v1_part1\freertos.o: ../task/action.h
