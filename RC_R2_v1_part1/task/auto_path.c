@@ -33,7 +33,7 @@ void UP_DOWN_Velt_Set(ST_Nav *pNav)
 		}
 		if (!foot_down_G_feedforward_flag && !foot_up_G_feedforward_flag){
 			pNav->expect_robot_global_velt.fpX = 0.f;
-			pNav->expect_robot_global_velt.fpY = -1400.f;
+			pNav->expect_robot_global_velt.fpY = -1450.f;
 			pNav->expect_robot_global_velt.fpW = 0.f;
 		}else{
 			pNav->expect_robot_global_velt.fpX = 0.f;
