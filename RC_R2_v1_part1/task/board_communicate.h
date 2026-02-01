@@ -24,6 +24,7 @@ extern uint8_t flag_S_get_block_top;    //S取上上层方块
 extern uint8_t flag_S_throw_block_back; //S向后扔方块
 extern uint8_t flag_S_throw_block_front;//S向前扔方块
 extern uint8_t flag_S_give_D;           //S给D方块
+extern uint8_t flag_S_get_D_block;
 extern uint8_t flag_S_put_block_middle; //S三区放中层方块
 extern uint8_t flag_S_put_block_top;    //S三区放上层方块
 extern bool flag_update_tx;

@@ -1,6 +1,7 @@
 #include "action.h"
-//½øÈëÖ®Ç°Ê¹nav.nav_state=NAV_PERMUTATION_PATH;flag_permutation_path=1;
+//è¿›å…¥ä¹‹å‰ä½¿nav.nav_state=NAV_PERMUTATION_PATH;flag_permutation_path=1;
 uint8_t flag_iinit=1;
+uint8_t up_stairs_flag=1;
 void Part0_INIT(void)
 {
 	if(part_over_flag==0)
@@ -18,13 +19,13 @@ void Part0_INIT(void)
 				rightup_turn_motor.ControlLoop_State == MULTIPLE_LOOP&&
         leftdown_turn_motor.ControlLoop_State == MULTIPLE_LOOP&&
         rightdown_turn_motor.ControlLoop_State == MULTIPLE_LOOP)
-			part_over_flag=1;
+			//part_over_flag=1;
 			flag_path_1=1;
 		}
 	}
 }
 
-void Part1_action(void)   //Ò»Çø
+void Part1_action(void)   //ä¸€åŒº
 {
 	if(part_over_flag==1)
   {
@@ -33,41 +34,77 @@ void Part1_action(void)   //Ò»Çø
 	    case 1:
 				if(flag_choose)
         {
-					up_s_state=S_INIT;
-					nav.auto_path.number_permutation=0;
-			    nav.nav_state=NAV_PERMUTATION_PATH;					
-					flag_choose=0;
+					 up_s_state=S_INIT;
+					 nav.auto_path.number_permutation=0;
+					 nav.nav_state=NAV_PERMUTATION_PATH;					
+					 flag_choose=0;
 				}
-		    if(nav.nav_state==NAV_LOCK)    //Â·¾¶Íê³É
+		    if(nav.nav_state==NAV_LOCK)    //è·¯å¾„å®Œæˆ
         {
+					flag_choose=1;
+					judge_123=vision_data_recieve.flag_123;
+					block_state.vision_judge_123=vision_data_recieve.flag_123;
 			    flag_path_1=2;
 		    }
-		  break;		
-		  case 2:
-				up_d_state=D_READY_GET_HEAD;   //×¼±¸È¡ÎäÆ÷Í·  2
-			  if(flag_D_ready_get_head==10)//×¼±¸Íê³É
+		  break;
+      case 2:
+				if(flag_choose)
+			  {
+				  flag_point_to_point = 1;
+					nav.auto_path.number_point=1;
+					nav.nav_state=NAV_POINT_TO_POINT;
+					flag_choose=0;
+			  }			  
+			  if(nav.nav_state==NAV_LOCK)
         {
-					up_d_state=D_GET_LEFT;    //È¡ÎäÆ÷Í·3
-				  	flag_path_1=3;
+				   flag_path_1=3;
+			  }
+				break;				
+		  case 3:
+				up_d_state=D_READY_GET_HEAD;   //å‡†å¤‡å–æ­¦å™¨å¤´  2
+			  if(flag_D_ready_get_head==10)//å‡†å¤‡å®Œæˆ
+        {
+					  up_d_state=D_GET_LEFT;    //å–æ­¦å™¨å¤´3
+				  	flag_path_1=4;
 			  }
 		  break;
-			case 3:
-				if(flag_D_ready_get_head==10)//È¡Íê
+			case 4:
+				if(flag_D_get_right==10)//å–å®Œ
 				{
-					//part_over_flag=2;  //½øÈë¶şÇøÇ°ÖÃÈÎÎñ	
-            	judge_123=0;	//¸Ä£¡£¡£¡			
+					up_d_state=D_GET_BLOCK;
+					//part_over_flag=2;  //è¿›å…¥äºŒåŒºå‰ç½®ä»»åŠ¡	
+            	//judge_123=0;	//æ”¹ï¼ï¼ï¼			
 				}
 				break;
 	  }
 	}
 }
-void Part2_123_action(void)//ÉÏÌ¨½×Ç°È¡123·½¿é
+void Part2_begin(void)
+{
+	if(part_over_flag==20)
+  {
+	   switch(flag_2_begin)
+     {
+			 case 1:
+				 up_s_state=S_INIT;
+				 up_d_state=D_GET_BLOCK;
+			   judge_123=vision_data_recieve.flag_123;
+				 block_state.vision_judge_123=vision_data_recieve.flag_123;
+				 if(flag_S_init==10&&flag_D_get_block==10)
+				 {
+					 //part_over_flag=2;
+				 }
+				 break;
+		 }
+  }
+}
+void Part2_123_action(void)//ä¸Šå°é˜¶å‰å–123æ–¹å—
 {
 	if(part_over_flag==2)
   {
 		switch(judge_123)
    {
-			case 0:  //123ÎŞ·½¿é£¬Ö±½Óµ½¶ş
+			case 0:  //123æ— æ–¹å—ï¼Œç›´æ¥åˆ°äºŒ
 				if(flag_choose)
 			 {
          nav.auto_path.number_permutation=1; 
@@ -75,11 +112,12 @@ void Part2_123_action(void)//ÉÏÌ¨½×Ç°È¡123·½¿é
 				 flag_choose=0;
 			  }
 			  if(nav.nav_state==NAV_LOCK)  
-        {					
+        {
+					flag_choose=1;
 				   judge_123=4;
 		     }
 				break;
-			case 1:  //1ÓĞ·½¿é£¬µ½1 
+			case 1:  //1æœ‰æ–¹å—ï¼Œåˆ°1 
 			     if(flag_choose)
 			    {
              nav.auto_path.number_permutation=4; 
@@ -88,10 +126,12 @@ void Part2_123_action(void)//ÉÏÌ¨½×Ç°È¡123·½¿é
 			    }
 			    if(nav.nav_state==NAV_LOCK)
          {
-			      judge_123=4;
+						 judge_123=4;
+					   flag_choose=1;
+				
 		      }
 				break;
-			case 2:  //2ÓĞ·½¿é£¬µ½2		     
+			case 2:  //2æœ‰æ–¹å—ï¼Œåˆ°2		     
 					if(flag_choose)
 					{
 					 nav.auto_path.number_permutation=1; 
@@ -100,10 +140,11 @@ void Part2_123_action(void)//ÉÏÌ¨½×Ç°È¡123·½¿é
 					}				  
 					if(nav.nav_state==NAV_LOCK)
 					{
-					 judge_123=4;
+              flag_choose=1;
+						 judge_123=4;
 					}
 				break;
-			case 3:  //3ÓĞ·½¿é£¬µ½3				
+			case 3:  //3æœ‰æ–¹å—ï¼Œåˆ°3				
 				if(flag_choose)
 			  {
 					 nav.auto_path.number_permutation=5; 
@@ -112,156 +153,150 @@ void Part2_123_action(void)//ÉÏÌ¨½×Ç°È¡123·½¿é
 			  }
 				if(nav.nav_state==NAV_LOCK)
 				{
-					 judge_123=4;
+					 flag_choose=1;
+						 judge_123=4;
 				}
 				break;
 			case 4:	
 				if(flag_choose)
-			   {
-						 nav.auto_path.number_permutation=3;//ÄæÊ±Õë 
+			  {
+				     nav.auto_path.number_permutation=2;//é€†æ—¶é’ˆ 
 						 nav.nav_state=NAV_PERMUTATION_PATH;
 						 flag_choose=0;
 						 judge_123=5;
 			  }
         break;
 			case 5:
-				if(nav.nav_state==NAV_LOCK)  //È¡¿é»ò½ø¶şÇø
+				if(nav.nav_state==NAV_LOCK)  //å¾®è°ƒå–æ–¹å—æˆ–è¿›äºŒåŒº
         {
              if(block_state.vision_judge_123==0)
 						 {
-							  flag_part_2=3;
+							  flag_part_2=2;
 								part_over_flag=3;
 						 }
-						 else if(block_state.vision_judge_123==2)
-						 {
-							  up_d_flag=D_GET_BLOCK;
-							  up_s_flag=S_GET_BLOCK_UP;
-						 }
-						 else if(block_state.vision_judge_123)
-						 {
-							  up_d_flag=D_GET_BLOCK;
-							  up_s_flag=S_GET_BLOCK_TOP;
-						 }		 
-					  if((flag_S_get_block_up==10||flag_S_get_block_top==10)&&flag_D_get_block==10)
+						 else 
             {
-					     judge_123=6;
-		        }
+							if(flag_choose)
+							{
+								flag_point_block=1;
+								nav.auto_path.get_block=(vision_data_recieve.flag_123); 
+								nav.nav_state=NAV_POINT_TO_POINT;
+								flag_choose=0;
+								judge_123=6;
+							}
+						}
 		     }				
 				break;
 			case 6:
-			   if(block_state.vision_judge_123==2)
-         {   flag_part_2=3;	
-						part_over_flag=3;  //½øÈë¶şÇøÈÎÎñ									  
-				 }
-				else if(block_state.vision_judge_123==1)
+				if(nav.nav_state==NAV_LOCK)  //å–å—
         {
-						if(flag_choose)
-						{
-							 nav.auto_path.number_permutation=6; 
-							 nav.nav_state=NAV_PERMUTATION_PATH;
-							 flag_choose=0;
-						}
-						if(nav.nav_state==NAV_LOCK)
-						{ 
-							flag_part_2=3;
-							 part_over_flag=3;  //½øÈë¶şÇøÈÎÎñ										  
-						}						
-				}				
-				else if(block_state.vision_judge_123==3)
-        {					
-						if(flag_choose)
-						{
-							 nav.auto_path.number_permutation=7; 
-							 nav.nav_state=NAV_PERMUTATION_PATH;
-							 flag_choose=0;
-						}
-						if(nav.nav_state==NAV_LOCK)
-						{  
-							 flag_part_2=3;
-							 part_over_flag=3;  //½øÈë¶şÇøÈÎÎñ										  
-						 }						  
-				}
-        break;
+					 if(block_state.vision_judge_123==2)
+					 {
+							up_d_state=D_GET_BLOCK;
+							up_s_state=S_GET_BLOCK_UP;
+							if(flag_S_get_block_up==10||flag_S_get_block_top==10)
+						 {
+								judge_123=7;
+						 }
+					 }
+					 else if(block_state.vision_judge_123)
+					 {
+						 if (up_stairs_flag)
+						 {
+							 foot.foot_state = FOOT_TEST_STAND_PREPARE; // 8
+							 up_stairs_flag = 0;
+						 }
+							up_d_state=D_GET_BLOCK;
+							up_s_state=S_GET_BLOCK_TOP;
+						 if(flag_S_get_block_up==10||flag_S_get_block_top==10)
+						 {
+							 judge_123=7;
+							 foot.foot_state =  FOOT_TEST_SIT ; // 6
+						 }
+					 }
+				}						 
+				break;
+			case 7://å­˜å— è¿›å…¥äºŒåŒºä»»åŠ¡
+					up_s_state=S_GIVE_D;
+					if(flag_S_give_D==10)
+					{
+						flag_part_2=2;	
+						part_over_flag=3;  //è¿›å…¥äºŒåŒºä»»åŠ¡		
+						block_state.num++;
+						block_state.pass_block++;
+					}
+				break;		
 	   }
    }
 }
-uint8_t up_stairs_flag=1;
-void Part2_action(void)  //¶şÇø
+int i=0;
+void Part2_action(void)  //äºŒåŒº
 {
-	int i=0;
 	if(i<5&&part_over_flag==3)
   {
 		switch(flag_part_2)
-   {
-			case 0: //ÅĞ¶Ï×ªÍä
-				if((vision_data_recieve.x2-vision_data_recieve.x1)<600&&(vision_data_recieve.x2-vision_data_recieve.x1)>-600)//Ë®Æ½×ß
-		    {
-			    if((vision_data_recieve.y2-vision_data_recieve.y1)>800)  //×ó×ª
-			    {
-						if(flag_choose)
-						{
-							 nav.auto_path.number_permutation=3; 
-							 nav.nav_state=NAV_PERMUTATION_PATH;
-							 flag_choose=0;
-						}
-				    turn_action=2;
-			     }
-			     else if((vision_data_recieve.y2-vision_data_recieve.y1)<-800)  //ÓÒ×ª
-					 {
-							if(flag_choose)
-							{
-								 nav.auto_path.number_permutation=2; 
-								 nav.nav_state=NAV_PERMUTATION_PATH;
-								 flag_choose=0;
-							}
-						 turn_action=1;
-					}				 
-		    }
-	     else if((vision_data_recieve.x2-vision_data_recieve.x1)>800)//ÏòÇ°×ß
-			 {
-				  turn_action=0;
-				  flag_part_2=1;
-			 }		 
+    {
+			case 0: //åˆ¤æ–­é¢å‰æ˜¯å¦æœ‰å—ï¼Œæœ‰åˆ™å¾®è°ƒ	
+				if(!vision_data_recieve.judge)//é¢å‰æ— å—
+				{
+					flag_part_2=2; 
+				}
+				else if(vision_data_recieve.judge)//é¢å‰æœ‰å— å¾®è°ƒ
+				{
+					if(flag_choose)
+					{
+						flag_point_block=1;
+						nav.auto_path.get_block=(vision_data_recieve.id*10+vision_data_recieve.next_id%10); 
+						nav.nav_state=NAV_POINT_TO_POINT;
+						flag_choose=0;
+					}
+          if(nav.nav_state==NAV_LOCK)
+          {
+						flag_part_2=2;
+					}						
+				} 
 				break;
-			case 1:   //ÃæÇ°ÊÇ·ñÓĞ·½¿é,²¢ÅĞ¶ÏÊÇ·ñÈ¡
-				if(nav.nav_state==NAV_LOCK)
-        {
-					  if(!vision_data_recieve.judge)//½ÓÊÕ·´À¡
-						{
-							flag_part_2=2; 
-						}
-						else if(vision_data_recieve.judge)
-						{
-								 if((vision_data_recieve.z2-vision_data_recieve.z1)>150)
-								 {
-									 up_s_flag=S_GET_BLOCK_UP;
-								 }
-								 else if((vision_data_recieve.z2-vision_data_recieve.z1)<-150)
-								 {
-									 up_s_flag=S_GET_BLOCK_DOWN;
-								 }	
-								 if(flag_S_get_block_up==10||flag_S_get_block_down==10)
-								{
-									flag_part_2=8;
-								}							 
-						}
-			   } 
-				 break;
-			case 2: //Î¢µ÷
+			case 1:   //åˆ¤æ–­å¦‚ä½•å–
+				if((vision_data_recieve.z2-vision_data_recieve.z1)>150)
+				{
+					up_s_state=S_GET_BLOCK_UP;
+				}
+				else if((vision_data_recieve.z2-vision_data_recieve.z1)<-150)
+				{
+					up_s_state=S_GET_BLOCK_DOWN;
+				}	
+				if(flag_S_get_block_up==10||flag_S_get_block_down==10)
+				{
+					flag_part_2=8;
+				}							 
+				break;
+			case 2: //ä¸Šå°é˜¶å‰å¾®è°ƒ
 				if(flag_choose)
 				{
+					flag_point_to_point = 1;
+					if(i==0)
+          {
+						nav.auto_path.number_point=2;
+					}
+					else
+         {
 					 nav.auto_path.number_point=(vision_data_recieve.id*10+vision_data_recieve.next_id%10); 
-					 nav.nav_state=NAV_POINT_TO_POINT;
-					 flag_choose=0;
+				 }
+					nav.nav_state=NAV_POINT_TO_POINT;
+					flag_choose=0;
 				}
 			  if(nav.nav_state==NAV_LOCK)
         {
 				   flag_part_2=3;
 			  }
 				break;
-			case 3:  //ÅĞ¶ÏÉÏÌ¨½×»¹ÊÇÏÂÌ¨½×			
-				if((vision_data_recieve.z2-vision_data_recieve.z1)>150)//ÉÏÌ¨½×
-			 { 
+			case 3:  //åˆ¤æ–­ä¸Šå°é˜¶è¿˜æ˜¯ä¸‹å°é˜¶			
+				if((vision_data_recieve.z2-vision_data_recieve.z1)>150)//ä¸Šå°é˜¶
+			  {
+					if(block_state.num>0)
+          {
+						foot_up_G_feedforward_flag=1;
+					}
 					if (up_stairs_flag)
 					{
 						foot.foot_state = FOOT_UP_PREPARE; // 2
@@ -271,11 +306,16 @@ void Part2_action(void)  //¶şÇø
 					{
 						up_stairs_flag = 1;
 						flag_part_2=4;
+						i++;
 					}
-			 }
-			 else if((vision_data_recieve.z2-vision_data_recieve.z1)<150)//ÏÂÌ¨½×
-			 {
-          if (up_stairs_flag)
+			  }
+			  else if((vision_data_recieve.z2-vision_data_recieve.z1)<150)//ä¸‹å°é˜¶
+			  {
+					if(block_state.num>1)
+          {
+						foot_down_G_feedforward_flag=1;
+					}
+           if (up_stairs_flag)
 					{
 						foot.foot_state=FOOT_DOWN_PREPARE; // 2
 						up_stairs_flag = 0;
@@ -283,319 +323,276 @@ void Part2_action(void)  //¶şÇø
 					if (foot.foot_state == FOOT_CLEAR) // 1
 					{
 						up_stairs_flag = 1;
-						flag_part_2=4;				
+						flag_part_2=4;	
+            i++;						
 					}				          			 
-			 }
-				break;			
-			case 4:  //ÉÏÌ¨½×ºó×ª»ØÈ¥
-			if(turn_action==0)  //ÅĞ¶Ï×ªÏòÍê³É
-       {
-			   flag_part_2=5;
-				 i++;
-		   }
-				else if(turn_action==1)
-        {			      				   
-						if(flag_choose)
-						{
-							 nav.auto_path.number_permutation=3; 
-							 nav.nav_state=NAV_PERMUTATION_PATH;
-							 flag_choose=0;
-						}		
-		    }
-		     else if(turn_action==2)
-		    {    
-						if(flag_choose)
-						{
-							 nav.auto_path.number_permutation=2; 
-							 nav.nav_state=NAV_PERMUTATION_PATH;
-							 flag_choose=0;
-						}
-						 flag_choose=0;			
-		    }
-			  if(nav.nav_state==NAV_LOCK)
-        {
-				  flag_part_2=5;
-					i++;
 			  }
-				break;
-			case 5:  //ÊÇ·ñÈ¡×óÓÒ·½¿é,È¡Ôò×ªÍä,²¢È¡¿é
-				if(block_state.vision_block_num==2||block_state.vision_block_num==3||block_state.vision_block_num==4)//Â·ÉÏ×Ü¿éÊı>=2,²»È¡
+				break;			
+			case 4:  //æ˜¯å¦å–å·¦å³æ–¹å—,å–åˆ™å¾®è°ƒ
+				if(block_state.vision_block_num==2||block_state.vision_block_num==3||block_state.vision_block_num==4)//è·¯ä¸Šæ€»å—æ•°>=2,ä¸å–
         {
-					flag_vision_update++;
+					if(i>1)
+            {
+							flag_vision_update++;
+						}
 					flag_part_2=0;
 				}
-				else if((block_state.vision_block_num==0&&block_state.num==0)||block_state.vision_block_num==1)//Â·ÉÏ×Ü¿éÊı<2,È¡µÚÒ»¸ö¿é
-       {
-				 if((vision_data_recieve.x3-vision_data_recieve.x1)<400&&(vision_data_recieve.x3-vision_data_recieve.x1)>-400)//´Ë¿ÌÈ¡
-				 {
-					 if((vision_data_recieve.y3-vision_data_recieve.y1)>800)  //×ó×ª
-					 {			 
-							if(flag_choose)
-							{
-								 nav.auto_path.number_permutation=3; 
-								 nav.nav_state=NAV_PERMUTATION_PATH;
-								 flag_choose=0;
-							}
-							 turn_action=2;
-					 }
-					 else if((vision_data_recieve.y3-vision_data_recieve.y1)<-800)  //ÓÒ×ª
-			     {
-							if(flag_choose)
-							{
-								 nav.auto_path.number_permutation=2; 
-								 nav.nav_state=NAV_PERMUTATION_PATH;
-								 flag_choose=0;
-							}
-							 turn_action=1;
-			     }
-				   if(nav.nav_state==NAV_LOCK)
-           {
-							 if((vision_data_recieve.z3-vision_data_recieve.z1)>150)
-							 {
-								 up_s_flag=S_GET_BLOCK_UP;
-							 } 
-							 else if((vision_data_recieve.z3-vision_data_recieve.z1)<-150)	
-							 {
-								 up_s_flag=S_GET_BLOCK_DOWN;
-							 } 
-							 flag_part_2=6;
-				   }
-				 }
-				 else
-				 {
-					 flag_vision_update++;
-					 flag_part_2=0;
-				 }				 
-			 }
-			 else if(block_state.vision_block_num==0&&block_state.num==1)
-       {
-				 if((vision_data_recieve.x4-vision_data_recieve.x1)<400&&(vision_data_recieve.x4-vision_data_recieve.x1)>-400)//´Ë¿ÌÈ¡
-				 {
-					 if((vision_data_recieve.y4-vision_data_recieve.y1)>800)  //×ó×ª
-					 {						 
-							if(flag_choose)
-							{
-								 nav.auto_path.number_permutation=3; 
-								 nav.nav_state=NAV_PERMUTATION_PATH;
-								 flag_choose=0;
-							}
-							 turn_action=2;
-					 }
-					 else if((vision_data_recieve.y4-vision_data_recieve.y1)<-800)  //ÓÒ×ª
-			     {
-							if(flag_choose)
-							{
-								 nav.auto_path.number_permutation=2; 
-								 nav.nav_state=NAV_PERMUTATION_PATH;
-								 flag_choose=0;
-							}
-							 turn_action=1;
-			     }
-				   if(nav.nav_state==NAV_LOCK)
-           {
-							 if((vision_data_recieve.z4-vision_data_recieve.z1)>150)
-							 {
-								 up_s_flag=S_GET_BLOCK_UP;
-							 }
-							 else if((vision_data_recieve.z4-vision_data_recieve.z1)<-150)	
-							 {
-								 up_s_flag=S_GET_BLOCK_DOWN;
-							 }	
-							 flag_part_2=6;
-				   }
-				 }
-				 else
-				 {
-					 flag_vision_update++;
-					 flag_part_2=0;
-				 }				
-			 }
-				break;
-			case 6:  //	×óÓÒÈ¡ÈçºÎ´æ·½¿é				
-			  if(flag_S_get_block_up==10||flag_S_get_block_down==10)
-        {
-						if(block_state.num==1)//µÚ¶ş¸ö¿éµ¥±Û´æ
-						{					
-							 flag_part_2=7;
-						}
-						else if(block_state.num==0)//µÚÒ»¸ö¿éË«±Û´æ
+				else if((block_state.vision_block_num==0&&block_state.num==0)||block_state.vision_block_num==1)//è·¯ä¸Šæ€»å—æ•°<2,å–ç¬¬ä¸€ä¸ªå—
+			  {
+				  if((vision_data_recieve.x3-vision_data_recieve.x1)<400&&(vision_data_recieve.x3-vision_data_recieve.x1)>-400)//æ­¤åˆ»å–
+				  {
+						if(flag_choose)
 						{
-							up_d_flag=D_GET_BLOCK;
+							flag_point_block=1;
+							nav.auto_path.get_block=(vision_data_recieve.id*10+vision_data_recieve.extra_id1%10); 
+							nav.nav_state=NAV_POINT_TO_POINT;
+							flag_choose=0;
 						}
-				}
-				else if(flag_D_get_block==10)
-        {
-						flag_vision_update++;
-						block_state.num++;
-						//block_state.pass_block++;
-						flag_part_2=7;
-				}				
-				break;
-			case 7:  //Ïò×óÓÒÈ¡¿éºóÔÙ×ª»ØÈ¥
-				if(turn_action==1)
-        { 
-				   if(flag_choose)
-						{
-							 nav.auto_path.number_permutation=3; 
-							 nav.nav_state=NAV_PERMUTATION_PATH;
-							 flag_choose=0;
-						}
-		    }
-		     else if(turn_action==2)
-		    {			     
-				  if(flag_choose)
-						{
-							 nav.auto_path.number_permutation=2; 
-							 nav.nav_state=NAV_PERMUTATION_PATH;
-							 flag_choose=0;
-						}
-		    }
-					if(nav.nav_state==NAV_LOCK)  //ÅĞ¶Ï×ªÏòÍê³É
-				 {
-					 flag_part_2=0;
-				 }
-				break;
-			case 8:  //ÏòÇ°È¡ÈçºÎ´æ¿é
-				if(block_state.vision_block_num==1||block_state.vision_block_num==2)//×ÜÂ·ÉÏ¿éÊı1»ò2
-         {
-					  if(block_state.num==0)//µÚÒ»¸ö¿éË«±Û´æ
-           {
-						  up_d_flag=D_GET_BLOCK;  
+					  if(nav.nav_state==NAV_LOCK)
+					  {
+							flag_part_2=5;
 					  }
-					  else if(block_state.num==1)//µÚ¶ş¸ö¿éµ¥±Û´æ
-           {
-					   flag_part_2=3;  
-				   }				
-				}
-				 else if(block_state.vision_block_num==3)//×ÜÂ·ÉÏ¿éÊıÎª3
+				  }
+				  else
+				  {
+						if(i>1)
+            {
+							flag_vision_update++;
+						}
+						
+						flag_part_2=0;
+				  }				 
+			    }
+			  else if(block_state.vision_block_num==0&&block_state.num==1)//å–ç¬¬äºŒä¸ªå—
+			  {
+				  if((vision_data_recieve.x4-vision_data_recieve.x1)<400&&(vision_data_recieve.x4-vision_data_recieve.x1)>-400)//æ­¤åˆ»å–
+				  {
+					    if(flag_choose)
+						{
+							flag_point_block=1;
+							nav.auto_path.get_block=(vision_data_recieve.id*10+vision_data_recieve.extra_id2%10); 
+							nav.nav_state=NAV_POINT_TO_POINT;
+							flag_choose=0;
+						}
+				    if(nav.nav_state==NAV_LOCK)
+            {
+							flag_part_2=5;
+				    }
+				  }
+				  else
+				  {
+					   if(i>1)
+            {
+							flag_vision_update++;
+						}
+					   flag_part_2=0;
+				  }				
+			 }
+				break;
+			case 5:  //å–å—
+				if((vision_data_recieve.z3-vision_data_recieve.z1)>150)
+				{
+				    up_s_state=S_GET_BLOCK_UP;
+				} 
+				 else if((vision_data_recieve.z3-vision_data_recieve.z1)<-150)	
+				{
+					up_s_state=S_GET_BLOCK_DOWN;
+				} 
+				if(flag_S_get_block_up==10||flag_S_get_block_down==10)
         {
-						if(block_state.vision_judge_123==0)//123ÎŞ¿é
-						{
-								if(block_state.pass_block==0)  //µÚÒ»¸ö¿éÖ±½ÓÈÓ
-								{
-									up_s_flag=S_THROW_BLOCK_BACK;    
-								}
-								else if(block_state.pass_block==1)  //µÚ¶ş¸ö¿éË«±Û´æ
-								{
-									up_s_flag=D_GET_BLOCK; 
-								}
-								else if(block_state.pass_block==2)  //µÚÈı¸ö¿éµ¥±Û´æ
-								{
-									flag_part_2=3;
-								}
-						}
-						else if(block_state.vision_judge_123!=0)	//ÊÖÖĞÒ»¶¨ÓĞ1¸ö¿é				
-						{
-								if(block_state.pass_block==1)  //µÚ¶ş¸ö¿é×ªÉíÈÓ
-								{
-										if(flag_choose)
-									  {
-											 nav.auto_path.number_permutation=8; 
-											 nav.nav_state=NAV_PERMUTATION_PATH;
-											 flag_choose=0;
-									  }
-										if(nav.nav_state==NAV_LOCK)
-										{
-											 flag_part_2=9;
-										}
-								}
-								else if(block_state.pass_block==2) //µÚÈı¸ö¿éµ¥±Û´æ
-								{
-									   flag_part_2=3;
-								}
-					}
+				   flag_part_2=6;
 				}
-				else if(block_state.vision_block_num==4)//×ÜÂ·ÉÏ¿éÊıÎª4
-        {
-						if(block_state.vision_judge_123==0)//123ÎŞ¿é
-						{
-								if(block_state.pass_block<2)//12¸ö¿éÖ±½ÓÈÓ
-								{
-									  up_s_flag=S_THROW_BLOCK_BACK;
-								}
-								else if(block_state.pass_block==2)//µÚ3¸öË«±Û´æ
-							  {
-								    up_s_flag=D_GET_BLOCK;
-							  }
-							  else if(block_state.pass_block==3)//µÚ4¸öµ¥±Û´æ
-							  {
-								   flag_part_2=3; 
-							  }
-						}
-						else if(block_state.vision_judge_123!=0)	//ÊÖÖĞÒ»¶¨ÓĞ1¸ö¿é		
-						{
-								if(block_state.pass_block==1||block_state.pass_block==2)//23¸ö¿é×ªÉíÈÓ
-								{
-										if(flag_choose)
-									  {
-											 nav.auto_path.number_permutation=8; 
-											 nav.nav_state=NAV_PERMUTATION_PATH;
-											 flag_choose=0;
-									  }
-										if(nav.nav_state==NAV_LOCK)
-										{
-											 flag_part_2=9;
-										}
-								}
-								else if(block_state.pass_block==3)//µÚ4¸ö¿éµ¥±Û´æ
-								{
-									 flag_part_2=3;
-								}
-						}
+				break;
+			case 6:  //	å·¦å³å–å¦‚ä½•å­˜æ–¹å—				
+				if(block_state.num==1)//ç¬¬äºŒä¸ªå—å•è‡‚å­˜
+			  {					
+					flag_part_2=0;
+				}
+				else if(block_state.num==0)//ç¬¬ä¸€ä¸ªå—åŒè‡‚å­˜
+				{
+					up_d_state=D_GET_BLOCK;
 				}
 				if(flag_D_get_block==10)
         {
-						block_state.pass_block++;
-					  block_state.num++;
-					  flag_part_2=3;
-				  }
-        	else if(flag_S_throw_block_back==10)
-         {
-					  block_state.pass_block++;
-					  flag_part_2=3;
-				 }				
+					if(i>1)
+            {
+							flag_vision_update++;
+						}
+					block_state.num++;
+					//block_state.pass_block++;
+					flag_part_2=0;
+				}				
 				break;
-			case 9://×ªÉíÈÓ¿é
-				up_s_flag=S_THROW_BLOCK_FRONT;
+			case 7:  
+				
+				break;
+			case 8:  //å‘å‰å–å¦‚ä½•å­˜å—
+				if(block_state.vision_block_num==1||block_state.vision_block_num==2)//æ€»è·¯ä¸Šå—æ•°1æˆ–2
+        {
+					if(block_state.num==0)//ç¬¬ä¸€ä¸ªå—åŒè‡‚å­˜
+          {
+						up_d_state=D_GET_BLOCK;  
+					}
+					else if(block_state.num==1)//ç¬¬äºŒä¸ªå—å•è‡‚å­˜
+          {
+					    flag_part_2=2;  
+				  }				
+				}
+				else if(block_state.vision_block_num==3)//æ€»è·¯ä¸Šå—æ•°ä¸º3
+        {
+					if(block_state.vision_judge_123==0)//123æ— å—
+					{
+						if(block_state.pass_block==0)  //ç¬¬ä¸€ä¸ªå—ç›´æ¥æ‰”
+						{
+							up_s_state=S_THROW_BLOCK_BACK;    
+						}
+						else if(block_state.pass_block==1)  //ç¬¬äºŒä¸ªå—åŒè‡‚å­˜
+						{
+							up_d_state=D_GET_BLOCK; 
+						}
+						else if(block_state.pass_block==2)  //ç¬¬ä¸‰ä¸ªå—å•è‡‚å­˜
+						{
+							flag_part_2=2;
+						}
+					}
+					else if(block_state.vision_judge_123!=0)	//æ‰‹ä¸­ä¸€å®šæœ‰1ä¸ªå—				
+					{
+						if(block_state.pass_block==1)  //ç¬¬äºŒä¸ªå—è½¬èº«æ‰”
+						{
+							if(flag_choose)
+							{
+								nav.auto_path.number_permutation=8; 
+								nav.nav_state=NAV_PERMUTATION_PATH;
+								flag_choose=0;
+							}
+							if(nav.nav_state==NAV_LOCK)
+							{
+								flag_part_2=9;
+							}
+						}
+						else if(block_state.pass_block==2) //ç¬¬ä¸‰ä¸ªå—å•è‡‚å­˜
+						{
+							flag_part_2=2;
+						}
+					}
+				}
+				else if(block_state.vision_block_num==4)//æ€»è·¯ä¸Šå—æ•°ä¸º4
+        {
+				  if(block_state.vision_judge_123==0)//123æ— å—
+					{
+						if(block_state.pass_block<2)//12ä¸ªå—ç›´æ¥æ‰”
+						{
+							up_s_state=S_THROW_BLOCK_BACK;
+						}
+						else if(block_state.pass_block==2)//ç¬¬3ä¸ªåŒè‡‚å­˜
+						{
+							up_d_state=D_GET_BLOCK;
+						}
+						else if(block_state.pass_block==3)//ç¬¬4ä¸ªå•è‡‚å­˜
+						{
+							flag_part_2=2; 
+						}
+					}
+					else if(block_state.vision_judge_123!=0)	//æ‰‹ä¸­ä¸€å®šæœ‰1ä¸ªå—		
+					{
+						if(block_state.pass_block==1||block_state.pass_block==2)//23ä¸ªå—è½¬èº«æ‰”
+						{
+							if(flag_choose)
+							{
+								nav.auto_path.number_permutation=8; 
+								nav.nav_state=NAV_PERMUTATION_PATH;
+								flag_choose=0;
+							}
+							if(nav.nav_state==NAV_LOCK)
+							{
+								flag_part_2=9;
+							}
+						}
+						else if(block_state.pass_block==3)//ç¬¬4ä¸ªå—å•è‡‚å­˜
+						{
+							flag_part_2=2;
+						}
+					}
+				}
+				if(flag_D_get_block==10)
+        {
+					block_state.pass_block++;
+					block_state.num++;
+					flag_part_2=2;
+				}
+        else if(flag_S_throw_block_back==10)
+       {
+					block_state.pass_block++;
+					flag_part_2=2;
+				}				
+				break;
+			case 9://è½¬èº«æ‰”å—
+				up_s_state=S_THROW_BLOCK_FRONT;
 			  if(flag_S_throw_block_front==10)
         {					
-				    if(flag_choose)
-						{
-							 nav.auto_path.number_permutation=8; 
-							 nav.nav_state=NAV_PERMUTATION_PATH;
-							 flag_choose=0;
-						}
-						if(nav.nav_state==NAV_LOCK)
-						{
-							 block_state.pass_block++;
-							 flag_part_2=3;
-						}
+				  if(flag_choose)
+					{
+						nav.auto_path.number_permutation=8; 
+						nav.nav_state=NAV_PERMUTATION_PATH;
+						flag_choose=0;
+					}
+					if(nav.nav_state==NAV_LOCK)
+					{
+						block_state.pass_block++;
+						flag_part_2=2;
+					}
 				}
 				break;
-	 }	   
+	    }	   
 	}
 	if(i==5)
   {
-		  if (up_stairs_flag)
-			{
-					foot.foot_state=FOOT_DOWN_PREPARE; // 2
-					up_stairs_flag = 0;
-			}
-			if (foot.foot_state == FOOT_CLEAR) // 1
-			{
-					up_stairs_flag = 1;
-					flag_part_3=vision_data_recieve.id;
-		      part_over_flag=4;
-			}				 		
+		part_over_flag=4;
+    flag_part_2_to_3=1;		
 	}
 }
-	void Part3_action(void)//3Çø×´Ì¬»ú
+void Part2_to_3(void)
 {
-	if((nav.nav_state==NAV_PERMUTATION_PATH||nav.nav_state==NAV_LOCK)&&part_over_flag==4)
+	if(part_over_flag==4)
+	{
+      switch(flag_part_2_to_3)
+	    {
+			case 1:
+        if(flag_choose)
+		    {
+					flag_point_to_point = 1;
+					nav.auto_path.number_point=(vision_data_recieve.id*10); 
+					nav.nav_state=NAV_POINT_TO_POINT;
+					flag_choose=0;
+				}
+				if(nav.nav_state==NAV_LOCK)
+        {
+					flag_part_2_to_3=2;
+				}
+				break;
+			case 2:
+				if (up_stairs_flag)
+				{
+					foot.foot_state=FOOT_DOWN_PREPARE; // 2
+					up_stairs_flag = 0;
+				}
+				if (foot.foot_state == FOOT_CLEAR) // 1
+				{
+					up_stairs_flag = 1;
+					part_over_flag=5;
+					flag_part_3=vision_data_recieve.id;
+				}				 		
+				break;		
+	    }
+	}
+}
+	void Part3_action(void)//3åŒºçŠ¶æ€æœº
+{
+	if(part_over_flag==5)
   {
 		switch(flag_part_3)
    {
-			case 10://µ½9¹¬¸ñÇ°
+			case 10://åˆ°9å®«æ ¼å‰
 				if(flag_choose)
 				{
 					 nav.auto_path.number_permutation=9; 
@@ -607,7 +604,7 @@ void Part2_action(void)  //¶şÇø
 				   flag_part_3=1;
 				}
 				break;
-			case 12://µ½9¹¬¸ñÇ°
+			case 12://åˆ°9å®«æ ¼å‰
 				if(flag_choose)
 				{
 					 nav.auto_path.number_permutation=10; 
@@ -616,10 +613,11 @@ void Part2_action(void)  //¶şÇø
 				}
 			  if(nav.nav_state==NAV_LOCK)
         {
+					flag_choose=1;
 				   flag_part_3=1;
 				}
 				break;
-			case 1://ÄæÊ±Õë×ª90¶È£¬µ¥±ÛÃæÏò9¹¬¸ñ
+			case 1://é€†æ—¶é’ˆè½¬90åº¦ï¼Œå•è‡‚é¢å‘9å®«æ ¼
 				if(flag_choose)
 				{
 					 nav.auto_path.number_permutation=2; 
@@ -628,20 +626,68 @@ void Part2_action(void)  //¶şÇø
 				}
 			  if(nav.nav_state==NAV_LOCK)
         {
-				   flag_part_3=2;
+					flag_choose=1;
+				   flag_part_3=3;
 				}
 				break;
-			case 2://·ÅÖĞ²ã·½¿é
-				up_s_flag=S_PUT_BLOCK_MIDDLE;
-			  if(flag_S_put_block_middle==10)
+			case 2://æ”¾ä¸­å±‚å·¦æ–¹å—
+				if(flag_choose)
+				{
+					flag_point_block=1;
+					nav.auto_path.get_block=4; 
+					nav.nav_state=NAV_POINT_TO_POINT;
+					flag_choose=0;
+				}
+				if(nav.nav_state==NAV_LOCK)
+				{
+					up_s_state=S_PUT_BLOCK_MIDDLE;
+					if(flag_S_put_block_middle==10)
+					{
+						 flag_part_3=5;
+					}
+				}
+				break;
+				case 3://æ”¾ä¸­å±‚ä¸­æ–¹å—
+				if(flag_choose)
+				{
+					flag_point_block=1;
+					nav.auto_path.get_block=5; 
+					nav.nav_state=NAV_POINT_TO_POINT;
+					flag_choose=0;
+				}
+				if(nav.nav_state==NAV_LOCK)
+				{
+					up_s_state=S_PUT_BLOCK_MIDDLE;
+					if(flag_S_put_block_middle==10)
+					{
+						 flag_part_3=5;
+					}
+				}
+				break;
+				case 4://æ”¾ä¸­å±‚å³æ–¹å—
+				if(flag_choose)
+				{
+					flag_point_block=1;
+					nav.auto_path.get_block=6; 
+					nav.nav_state=NAV_POINT_TO_POINT;
+					flag_choose=0;
+				}
+				if(nav.nav_state==NAV_LOCK)
+				{
+					up_s_state=S_PUT_BLOCK_MIDDLE;
+					if(flag_S_put_block_middle==10)
+					{
+						 flag_part_3=6;
+					}
+				}
+				break;
+			case 5://
+				if(flag_S_get_D_block==10)
         {
-					 flag_part_3=3;
-				}
+					 flag_part_3=4;
+				}				
 				break;
-			case 3://ÉÏR1
-				
-				break;
-			case 4://·ÅÉÏ²ã·½¿é
+			case 6://æ”¾ä¸Šå±‚æ–¹å—
 				
 				break;
 	 }

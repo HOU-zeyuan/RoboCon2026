@@ -121,9 +121,9 @@ void CalculateVelocities(const ST_JS_VALUE *jsValue, ST_Nav *p_nav,
     LpFilter(&FJy);
     LpFilter(&FJw);
 
-    p_nav->auto_path.basic_velt.fpVx = -FJx.out;  // 摇杆值X方向从右到左是从0到4096。
-    p_nav->auto_path.basic_velt.fpVy = FJy.out; // 摇杆值Y方向从上到下是从0到4096。
-    p_nav->auto_path.basic_velt.fpW = FJw.out;  //  右摇杆X控制角速度
+    p_nav->auto_path.basic_velt.fpVx = FJx.out;  // 摇杆值X方向从右到左是从0到4096。
+    p_nav->auto_path.basic_velt.fpVy = -FJy.out; // 摇杆值Y方向从上到下是从0到4096。
+    p_nav->auto_path.basic_velt.fpW = -FJw.out;  //  右摇杆X控制角速度
 }
 
 void Deal_Key_State(const ST_JS_VALUE *jsValue)
@@ -149,41 +149,32 @@ void Deal_Key_State(const ST_JS_VALUE *jsValue)
             foot.foot_state = FOOT_UP_PREPARE;
             break;  
         case 8:
-            foot.foot_state = FOOT_UPSTAIRS;
-            break;
-
-        // case 9:
-        //     foot.foot_up = UP2;
-        //     break;
-        // case 10:
-        //     foot.foot_up = UP3;
-        //     break;
-
-        case 15:
             foot.foot_state = FOOT_DOWN_PREPARE;
             break;
-        case 16:
-            foot.foot_state = FOOT_DOWNSTAIRS;
-            break;
 
-        // case 17:
-        //     foot.foot_down = DOWN2;
-        //     break;
-        // case 18:
-        //     foot.foot_down = DOWN3;
-        //     break;
-
-        case 21:
+        case 9:
             foot.foot_state = FOOT_TEST_STAND_PREPARE;
             break;
 
-        case 22:
+        case 10:
             foot.foot_state = FOOT_TEST_STAND;
             break;
 
-        case 23:
+        case 11:
             foot.foot_state = FOOT_TEST_SIT;
             break;
+				
+				case 21:
+						part_over_flag = 0;
+						break;
+				
+				case 22:
+						part_over_flag = 20;
+						break;
+				
+				case 23:
+						part_over_flag = 30;
+						break;
         
         default:
             break;

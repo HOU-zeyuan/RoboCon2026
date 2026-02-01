@@ -6,6 +6,5 @@
 
 void Foot_WorkLoop(void);
 bool Foot_DT35_distance_check(uint8_t mode);
-void balance_foot(void);
 
 #endif

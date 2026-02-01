@@ -31,9 +31,15 @@ void UP_DOWN_Velt_Set(ST_Nav *pNav)
 			pNav->auto_path.run_time = 0;
 			pNav->auto_path.run_time_flag = 1;
 		}
-		pNav->expect_robot_global_velt.fpX = 0.f;
-		pNav->expect_robot_global_velt.fpY = -1200.f;
-		pNav->expect_robot_global_velt.fpW = 0.f;
+		if (!foot_down_G_feedforward_flag && !foot_up_G_feedforward_flag){
+			pNav->expect_robot_global_velt.fpX = 0.f;
+			pNav->expect_robot_global_velt.fpY = -1400.f;
+			pNav->expect_robot_global_velt.fpW = 0.f;
+		}else{
+			pNav->expect_robot_global_velt.fpX = 0.f;
+			pNav->expect_robot_global_velt.fpY = -1650.f;
+			pNav->expect_robot_global_velt.fpW = 0.f;
+		}
 		break;
 
 	case UP_APPROACH_2:
@@ -43,7 +49,7 @@ void UP_DOWN_Velt_Set(ST_Nav *pNav)
 			pNav->auto_path.run_time_flag = 1;
 		}
 		pNav->expect_robot_global_velt.fpX = 0.f;
-		pNav->expect_robot_global_velt.fpY = -3200.f;
+		pNav->expect_robot_global_velt.fpY = -5000.f;
 		pNav->expect_robot_global_velt.fpW = 0.f;
 		break;
 
@@ -65,7 +71,7 @@ void UP_DOWN_Velt_Set(ST_Nav *pNav)
 			pNav->auto_path.run_time_flag = 1;
 		}
 		pNav->expect_robot_global_velt.fpX = 0.f;
-		pNav->expect_robot_global_velt.fpY = 800.f;
+		pNav->expect_robot_global_velt.fpY = 900.f;
 		pNav->expect_robot_global_velt.fpW = 0.f;
 		break;
 
@@ -433,11 +439,11 @@ void path_permutation_choose(ST_Nav *p_nav)
 		break;
 	case 4: // 前往梅林1
 		Path_Permutation_Set_1_0(&Path_Permuta, p_nav);
-		Rotation_Permutation_Set_1(&Path_Permuta, p_nav);
+		// Rotation_Permutation_Set_1(&Path_Permuta,p_nav);
 		break;
 	case 5: // 前往梅林3
 		Path_Permutation_Set_1_3(&Path_Permuta, p_nav);
-		Rotation_Permutation_Set_1(&Path_Permuta, p_nav);
+		// Rotation_Permutation_Set_1(&Path_Permuta,p_nav);
 		break;
 	case 6: // 梅林1到2
 		Path_Permutation_Set_1to2(&Path_Permuta, p_nav);
@@ -488,7 +494,7 @@ void Path_Permutation_Set_1_1(PATH_PERMUTATION *Path_Permuta, ST_Nav *p_nav) // 
 	float A[5];				  // 10段各自的加速度
 	float R[5];				  // 10段各自的半径（直线给0）
 	float T[5];				  // 10段各自的时间
-	uint8_t num_module = 3;
+	uint8_t num_module = 2;
 
 	if (P_Num == 0) // 刚开始跑组合路径
 	{
@@ -528,30 +534,30 @@ void Path_Permutation_Set_1_1(PATH_PERMUTATION *Path_Permuta, ST_Nav *p_nav) // 
 	// 1.斜线匀加速
 	// 起始、终止速度和加速度（刚开始启动的时候比较特殊需要给一个总初值，之后会自动拿上一次中止当下一次的start）
 	V_Start[0].fpLength = 0.001;
-	V_Start[0].fpThetha = 29;
+	V_Start[0].fpThetha = -29;
 	V_Start[0].type = POLAR;
 
-	V_End[0].fpLength = 1100; // 1500;//
-	V_End[0].fpThetha = 29;
+	V_End[0].fpLength = 1000; // 1500;//
+	V_End[0].fpThetha = -29;
 	V_End[0].type = POLAR;
 	Path_Type[0] = LINE;
-	A[0] = 1100; // 2000;
+	A[0] = 1000; // 2000;
 
-	// 2.直线匀速
-	// 极坐标位置增量
-	Point_Inc[1].fpLength = 25; // 2600;//
-	Point_Inc[1].fpThetha = 29;
-	Point_Inc[1].type = POLAR;
-	Path_Type[1] = LINE;
-	A[1] = 0;
+//	// 2.直线匀速
+//	// 极坐标位置增量
+//	Point_Inc[1].fpLength = 125; // 2600;//
+//	Point_Inc[1].fpThetha = -29;
+//	Point_Inc[1].type = POLAR;
+//	Path_Type[1] = LINE;
+//	A[1] = 0;
 
 	// 3.斜线匀减速
 	// 极坐标位置增量
-	V_End[2].fpLength = 0.001; // 1500;//
-	V_End[2].fpThetha = 29;
-	V_End[2].type = POLAR;
-	Path_Type[2] = LINE;
-	A[2] = -1100; //-2300;
+	V_End[1].fpLength = 0.001; // 1500;//
+	V_End[1].fpThetha = -29;
+	V_End[1].type = POLAR;
+	Path_Type[1] = LINE;
+	A[1] = -1000; //-2300;
 
 	// 赋好值以后只需要调用初始化函数
 	Path_Permutation(Point_Start, Point_Inc, V_Start, V_End, Path_Type, A, R, T, num_module); // 将上述路径赋值给Path_Permuta结构体并计算时间
@@ -607,7 +613,7 @@ void Path_Permutation_Set_1_2(PATH_PERMUTATION *Path_Permuta, ST_Nav *p_nav) // 
 	// 赋好值以后只需要调用初始化函数
 	Path_Permutation(Point_Start, Point_Inc, V_Start, V_End, Path_Type, A, R, T, num_module); // 将上述路径赋值给Path_Permuta结构体并计算时间
 }
-void Path_Permutation_Set_1_0(PATH_PERMUTATION *Path_Permuta, ST_Nav *p_nav) // 一区到梅林1
+void Path_Permutation_Set_1_3(PATH_PERMUTATION *Path_Permuta, ST_Nav *p_nav) // 一区到梅林3
 {
 	ST_VECTOR Point_Start[10]; // 路程起始坐标
 	ST_VECTOR Point_Inc[10];   // 坐标增量
@@ -633,22 +639,22 @@ void Path_Permutation_Set_1_0(PATH_PERMUTATION *Path_Permuta, ST_Nav *p_nav) // 
 	V_Start[0].fpThetha = -180;
 	V_Start[0].type = POLAR;
 
-	V_End[0].fpLength = 1500; // 1500;//
+	V_End[0].fpLength = 1300; // 1500;//
 	V_End[0].fpThetha = -180;
 	V_End[0].type = POLAR;
 	Path_Type[0] = LINE;
-	A[0] = 1500; // 2000;
+	A[0] = 1300; // 2000;
 
 	// 2.直线减速
 	V_End[1].fpLength = 0.001;
 	V_End[1].fpThetha = -180;
 	V_End[1].type = POLAR;
-	A[1] = -1500;
+	A[1] = -1300;
 	Path_Type[1] = LINE;
 	// 赋好值以后只需要调用初始化函数
 	Path_Permutation(Point_Start, Point_Inc, V_Start, V_End, Path_Type, A, R, T, num_module); // 将上述路径赋值给Path_Permuta结构体并计算时间
 }
-void Path_Permutation_Set_1_3(PATH_PERMUTATION *Path_Permuta, ST_Nav *p_nav) // 一区到梅林3
+void Path_Permutation_Set_1_0(PATH_PERMUTATION *Path_Permuta, ST_Nav *p_nav) // 一区到梅林1
 {
 	ST_VECTOR Point_Start[10]; // 路程起始坐标
 	ST_VECTOR Point_Inc[10];   // 坐标增量
@@ -698,7 +704,7 @@ void Path_Permutation_Set_1_3(PATH_PERMUTATION *Path_Permuta, ST_Nav *p_nav) // 
 	// 赋好值以后只需要调用初始化函数
 	Path_Permutation(Point_Start, Point_Inc, V_Start, V_End, Path_Type, A, R, T, num_module); // 将上述路径赋值给Path_Permuta结构体并计算时间
 }
-void Path_Permutation_Set_1to2(PATH_PERMUTATION *Path_Permuta, ST_Nav *p_nav) // 梅林1到2
+void Path_Permutation_Set_3to2(PATH_PERMUTATION *Path_Permuta, ST_Nav *p_nav) // 梅林3到2
 {
 	ST_VECTOR Point_Start[5]; // 路程起始坐标
 	ST_VECTOR Point_Inc[5];	  // 坐标增量
@@ -739,7 +745,7 @@ void Path_Permutation_Set_1to2(PATH_PERMUTATION *Path_Permuta, ST_Nav *p_nav) //
 	// 赋好值以后只需要调用初始化函数
 	Path_Permutation(Point_Start, Point_Inc, V_Start, V_End, Path_Type, A, R, T, num_module); // 将上述路径赋值给Path_Permuta结构体并计算时间
 }
-void Path_Permutation_Set_3to2(PATH_PERMUTATION *Path_Permuta, ST_Nav *p_nav) // 梅林3到2
+void Path_Permutation_Set_1to2(PATH_PERMUTATION *Path_Permuta, ST_Nav *p_nav) // 梅林1到2
 {
 	ST_VECTOR Point_Start[5]; // 路程起始坐标
 	ST_VECTOR Point_Inc[5];	  // 坐标增量
@@ -816,7 +822,7 @@ void Path_Permutation_Set_3_10(PATH_PERMUTATION *Path_Permuta, ST_Nav *p_nav) //
 	// 终止速度和半径
 	V_End[1].fpLength = 1200; // 1500;//
 	V_End[1].fpThetha = -90;
-	R[1] = 600;
+	R[1] = 580;
 	V_End[1].type = POLAR;
 	Path_Type[1] = CIRCLE;
 
@@ -825,14 +831,14 @@ void Path_Permutation_Set_3_10(PATH_PERMUTATION *Path_Permuta, ST_Nav *p_nav) //
 	V_Start[2].fpThetha = -90;
 	V_Start[2].type = POLAR;
 
-	V_End[2].fpLength = 2000; // 1500;//
+	V_End[2].fpLength = 1500; // 1500;//
 	V_End[2].fpThetha = -90;
 	V_End[2].type = POLAR;
 	Path_Type[2] = LINE;
 	A[2] = 1500; // 2000;
 
 	// 4.直线匀速
-	Point_Inc[3].fpLength = 1147; // 2600;//
+	Point_Inc[3].fpLength = 1450; // 2600;//
 	Point_Inc[3].fpThetha = -90;
 	Point_Inc[3].type = POLAR;
 	Path_Type[3] = LINE;
@@ -840,18 +846,18 @@ void Path_Permutation_Set_3_10(PATH_PERMUTATION *Path_Permuta, ST_Nav *p_nav) //
 
 	// 5.圆弧
 	// 终止速度和半径
-	V_End[4].fpLength = 2000; // 1500;//
+	V_End[4].fpLength = 1500; // 1500;//
 	V_End[4].fpThetha = 10;
-	R[4] = 670;
+	R[4] = 500;
 	V_End[4].type = POLAR;
 	Path_Type[4] = CIRCLE;
 
-	// 6.斜线匀速
-	Point_Inc[5].fpLength = 2600; // 2600;//
-	Point_Inc[5].fpThetha = 10;
-	Point_Inc[5].type = POLAR;
-	Path_Type[5] = LINE;
-	A[5] = 0;
+	//	//6.斜线匀速
+		Point_Inc[5].fpLength = 3000;//2600;//
+	  Point_Inc[5].fpThetha = 10;
+		Point_Inc[5].type = POLAR;
+		Path_Type[5] = LINE;
+		A[5] = 0;
 
 	// 7.斜线匀减速
 	// 极坐标位置增量
@@ -875,7 +881,7 @@ void Path_Permutation_Set_3_12(PATH_PERMUTATION *Path_Permuta, ST_Nav *p_nav) //
 	float A[10];			   // 10段各自的加速度
 	float R[10];			   // 10段各自的半径（直线给0）
 	float T[10];			   // 10段各自的时间
-	uint8_t num_module = 7;
+	uint8_t num_module = 8;
 
 	if (P_Num == 0) // 刚开始跑组合路径
 	{
@@ -891,14 +897,14 @@ void Path_Permutation_Set_3_12(PATH_PERMUTATION *Path_Permuta, ST_Nav *p_nav) //
 	V_Start[0].fpThetha = -180;
 	V_Start[0].type = POLAR;
 
-	V_End[0].fpLength = 2000; // 1500;//
+	V_End[0].fpLength = 1200; // 1500;//
 	V_End[0].fpThetha = -180;
 	V_End[0].type = POLAR;
 	Path_Type[0] = LINE;
-	A[0] = 1500; // 2000;
+	A[0] = 1200; // 2000;
 
 	// 2.直线匀速
-	Point_Inc[1].fpLength = 1666; // 2600;//
+	Point_Inc[1].fpLength = 2400; // 2600;//
 	Point_Inc[1].fpThetha = -180;
 	Point_Inc[1].type = POLAR;
 	Path_Type[1] = LINE;
@@ -906,41 +912,52 @@ void Path_Permutation_Set_3_12(PATH_PERMUTATION *Path_Permuta, ST_Nav *p_nav) //
 
 	// 3.圆弧
 	// 终止速度和半径
-	V_End[2].fpLength = 2000; // 1500;//
+	V_End[2].fpLength = 1200; // 1500;//
 	V_End[2].fpThetha = -90;
-	R[2] = 600;
+	R[2] = 580;
 	V_End[2].type = POLAR;
 	Path_Type[2] = CIRCLE;
 
-	// 4.直线匀速
-	Point_Inc[3].fpLength = 1900; // 2600;//
-	Point_Inc[3].fpThetha = -90;
-	Point_Inc[3].type = POLAR;
+	// 4.直线匀加速
+	V_Start[3].fpLength = 1200;
+	V_Start[3].fpThetha = -90;
+	V_Start[3].type = POLAR;
+
+	V_End[3].fpLength = 1500; // 1500;//
+	V_End[3].fpThetha = -90;
+	V_End[3].type = POLAR;
 	Path_Type[3] = LINE;
-	A[3] = 0;
+	A[3] = 1500; // 2000;
 
-	// 5.圆弧
+	// 5.直线匀速
+	Point_Inc[4].fpLength = 1450; // 2600;//
+	Point_Inc[4].fpThetha = -90;
+	Point_Inc[4].type = POLAR;
+	Path_Type[4] = LINE;
+	A[4] = 0;
+
+	// 6.圆弧
 	// 终止速度和半径
-	V_End[4].fpLength = 2000; // 1500;//
-	V_End[4].fpThetha = 10;
-	R[4] = 670;
-	V_End[4].type = POLAR;
-	Path_Type[4] = CIRCLE;
-
-	// 6.斜线匀速
-	Point_Inc[5].fpLength = 2600; // 2600;//
-	Point_Inc[5].fpThetha = 10;
-	Point_Inc[5].type = POLAR;
-	Path_Type[5] = LINE;
-	A[5] = 0;
-
-	// 7.斜线匀减速
-	// 极坐标位置增量
-	V_End[6].fpLength = 0.001; // 1500;//
-	V_End[6].fpThetha = 10;
-	V_End[6].type = POLAR;
+	V_End[5].fpLength = 1500; // 1500;//
+	V_End[5].fpThetha = 10;
+	R[5] = 500;
+	V_End[5].type = POLAR;
+	Path_Type[5] = CIRCLE;
+	
+	//7.斜线匀速
+	Point_Inc[6].fpLength = 3000;//2600;//
+	Point_Inc[6].fpThetha = 10;
+	Point_Inc[6].type = POLAR;
 	Path_Type[6] = LINE;
-	A[6] = -1500; // 2000;
+	A[6] = 0;
+
+	// 8.斜线匀减速
+	// 极坐标位置增量
+	V_End[7].fpLength = 0.001; // 1500;//
+	V_End[7].fpThetha = 10;
+	V_End[7].type = POLAR;
+	Path_Type[7] = LINE;
+	A[7] = -1500; // 2000;
 
 	// 赋好值以后只需要调用初始化函数
 	Path_Permutation(Point_Start, Point_Inc, V_Start, V_End, Path_Type, A, R, T, num_module); // 将上述路径赋值给Path_Permuta结构体并计算时间
@@ -1045,68 +1062,316 @@ void Rotation_Permutation_Set_3(PATH_PERMUTATION *Path_Permuta, ST_Nav *p_nav)
 // 微调start
 uint8_t point_cnt = 0;
 
-void path_point_choose(ST_Nav *p_nav)
+void path_get_block(ST_Nav *p_nav)
 {
-	switch (p_nav->auto_path.number_point)
+	switch (p_nav->auto_path.get_block)
 	{
-	case 1: // 武馆--->梅林2
-		Path_Point.point.fpX = -1340.f;
-		Path_Point.point.fpY = -340.f;
+	case 1: // 武馆--->梅林1
+		Path_Point.point.fpX = -2267.f;
+		Path_Point.point.fpY = -997.f;
 		Path_Point.point.fpW = 90.f; // 偏航角 °
 		break;
-
+	case 2: // 武馆--->梅林2
+		Path_Point.point.fpX = -1087.f;
+		Path_Point.point.fpY = -787.f;
+		Path_Point.point.fpW = 90.f; // 偏航角 °
+		break;
+	case 3: // 武馆--->梅林3
+		Path_Point.point.fpX = 127.f;
+		Path_Point.point.fpY = -1057.f;
+		Path_Point.point.fpW = 90.f; // 偏航角 °
+		break;
+	case 4: //三区二层左
+		Path_Point.point.fpX = 1063.f;
+		Path_Point.point.fpY = -8308.f;
+		Path_Point.point.fpW = 180.f; // 偏航角 °
+		break;
+	case 5: //三区二层中
+		Path_Point.point.fpX = 1022.f;
+		Path_Point.point.fpY = -8824.f;
+		Path_Point.point.fpW = 180.f; // 偏航角 °
+		break;
+	case 6: //三区二层右
+		Path_Point.point.fpX = 1000.f;
+		Path_Point.point.fpY = -9374.f;
+		Path_Point.point.fpW = 180.f; // 偏航角 °
+		break;
 	case 25: // 梅林2--->梅林5
-		Path_Point.point.fpX = -1340.f;
-		Path_Point.point.fpY = -1540.f;
+		Path_Point.point.fpX = -1112.f;
+		Path_Point.point.fpY = -1993.f;
 		Path_Point.point.fpW = 90.f;
 		break;
 
 	case 23: // 梅林2--->梅林3
-		Path_Point.point.fpX = -1790.f;
-		Path_Point.point.fpY = -1640.f;
+		Path_Point.point.fpX = -1335.f;
+		Path_Point.point.fpY = -1772.f;
 		Path_Point.point.fpW = 180.f;
 		break;
 
 	case 21: // 梅林2--->梅林1
-		Path_Point.point.fpX = -1290.f;
-		Path_Point.point.fpY = -2040.f;
+		Path_Point.point.fpX = -1330.f;
+		Path_Point.point.fpY = -2195.f;
 		Path_Point.point.fpW = 0.f;
 		break;
 
 	case 58: // 梅林5--->梅林8
-		Path_Point.point.fpX = -1340.f;
-		Path_Point.point.fpY = -2740.f;
+		Path_Point.point.fpX = -1122.f;
+		Path_Point.point.fpY = -3195.f;
 		Path_Point.point.fpW = 90.f;
 		break;
 
 	case 14: // 梅林1--->梅林4
-		Path_Point.point.fpX = -2880.f;
-		Path_Point.point.fpY = -2020.f;
-		Path_Point.point.fpW = -90.f;
+		Path_Point.point.fpX = -2280.f;
+		Path_Point.point.fpY = -2092.f;
+		Path_Point.point.fpW = 90.f;
 		break;
 
 	case 36: // 梅林3--->梅林6
-		Path_Point.point.fpX = -150.f;
-		Path_Point.point.fpY = -1620.f;
+		Path_Point.point.fpX = 132.f;
+		Path_Point.point.fpY = -2032.f;
 		Path_Point.point.fpW = 90.f;
 		break;
 
 	case 54: // 梅林5--->梅林4
-		Path_Point.point.fpX = -1850.f;
-		Path_Point.point.fpY = -2830.f;
+		Path_Point.point.fpX = -1492.f;
+		Path_Point.point.fpY = -3395.f;
+		Path_Point.point.fpW = 0.f;
+		break;
+
+	case 56: // 梅林5--->梅林6    // 54和56起始点相同
+		Path_Point.point.fpX = -1357.f;
+		Path_Point.point.fpY = -3021.f;
+		Path_Point.point.fpW = 180.f;
+		break;
+
+	case 47: // 梅林4--->梅林7
+		Path_Point.point.fpX = -2347.f;
+		Path_Point.point.fpY = -3148.f;
+		Path_Point.point.fpW = 90.f;
+		break;
+
+	case 45: // 梅林4--->梅林5
+		Path_Point.point.fpX = -2565.f;
+		Path_Point.point.fpY = -2988.f;
+		Path_Point.point.fpW = 180.f;
+		break;
+
+	case 69: // 梅林6--->梅林9
+		Path_Point.point.fpX = 45.f;
+		Path_Point.point.fpY = -3380.f;
+		Path_Point.point.fpW = 90.f;
+		break;
+
+	case 65: // 梅林6--->梅林5
+		Path_Point.point.fpX = -300.f;
+		Path_Point.point.fpY = -3446.f;
+		Path_Point.point.fpW = 0.f;
+		break;
+
+	case 70: // 梅林7--->梅林10
+		Path_Point.point.fpX = -2395.f;
+		Path_Point.point.fpY = -4504.f;
+		Path_Point.point.fpW = 90.f;
+		break;
+	case 78: // 梅林7--->梅林8
+		Path_Point.point.fpX = -2591.f;
+		Path_Point.point.fpY = -4164.f;
+		Path_Point.point.fpW = 180.f;
+		break;
+
+	case 87: // 梅林8--->梅林7
+		Path_Point.point.fpX = -1525.f;
+		Path_Point.point.fpY = -4580.f;
+		Path_Point.point.fpW = 0.f;
+		break;
+
+	case 89: // 梅林8--->梅林9
+		Path_Point.point.fpX = -1255.f;
+		Path_Point.point.fpY = -4185.f;
+		Path_Point.point.fpW = 180.f;
+		break;
+
+	case 81: // 梅林8--->梅林11
+		Path_Point.point.fpX = -1185.f;
+		Path_Point.point.fpY = -4530.f;
+		Path_Point.point.fpW = 90.f;
+		break;
+
+	case 92: // 梅林9--->梅林12
+		Path_Point.point.fpX = 18.f;
+		Path_Point.point.fpY = -4573.f;
+		Path_Point.point.fpW = 90.f;
+		break;
+
+	case 98: // 梅林9--->梅林8
+		Path_Point.point.fpX = -178.f;
+		Path_Point.point.fpY = -4640.f;
+		Path_Point.point.fpW = 0.f;
+		break;
+
+	case 101: // 梅林10--->梅林11
+		Path_Point.point.fpX = -2630.f;
+		Path_Point.point.fpY = -5360.f;
+		Path_Point.point.fpW = 180.f;
+		break;
+
+	case 121: // 梅林12--->梅林11
+		Path_Point.point.fpX = -205.f;
+		Path_Point.point.fpY = -5827.f;
+		Path_Point.point.fpW = 0.f;
+		break;
+
+	case 112: // 梅林11--->梅林12
+		Path_Point.point.fpX = -1297.f;
+		Path_Point.point.fpY = -5404.f;
+		Path_Point.point.fpW = 180.f;
+		break;
+
+	case 110: // 梅林11--->梅林10
+		Path_Point.point.fpX = -1585.f;
+		Path_Point.point.fpY = -5800.f;
+		Path_Point.point.fpW = 0.f;
+		break;
+
+	default:
+		break;
+	}
+}
+void path_point_choose(ST_Nav *p_nav)
+{
+
+	switch (p_nav->auto_path.number_point)
+	{
+	case 1: // 启动区--->武馆
+		Path_Point.point.fpX = 1240.f;
+		Path_Point.point.fpY = -647.f;
+		Path_Point.point.fpW = 0.f; // 偏航角 °
+		break;
+	
+	case 2: // 武馆--->梅林2
+		Path_Point.point.fpX = -1080.f;
+		Path_Point.point.fpY = -500.f;
+		Path_Point.point.fpW = 90.f; // 偏航角 °
+		break;
+
+	case 25: // 梅林2--->梅林5
+		Path_Point.point.fpX = -1080.f;
+		Path_Point.point.fpY = -1730.f;
+		Path_Point.point.fpW = 90.f;
+		break;
+
+	case 23: // 梅林2--->梅林3
+		Path_Point.point.fpX = -1580.f;
+		Path_Point.point.fpY = -1750.f;
+		Path_Point.point.fpW = 180.f;
+		break;
+
+	case 21: // 梅林2--->梅林1
+		Path_Point.point.fpX = -1060.f;
+		Path_Point.point.fpY = -2180.f;
+		Path_Point.point.fpW = 0.f;
+		break;
+
+	case 58: // 梅林5--->梅林8
+		Path_Point.point.fpX = -1080.f;
+		Path_Point.point.fpY = -2930.f;
+		Path_Point.point.fpW = 90.f;
+		break;
+
+	case 14: // 梅林1--->梅林4
+		Path_Point.point.fpX = -2790.f;
+		Path_Point.point.fpY = -2220.f;
+		Path_Point.point.fpW = -90.f;
+		break;
+
+	case 36: // 梅林3--->梅林6
+		Path_Point.point.fpX = 120.f;
+		Path_Point.point.fpY = -1730.f;
+		Path_Point.point.fpW = 90.f;
+		break;
+
+	case 54: // 梅林5--->梅林4
+		Path_Point.point.fpX = -1600.f;
+		Path_Point.point.fpY = -2980.f;
 		Path_Point.point.fpW = 180.f;
 		break;
 
 	case 56: // 梅林5--->梅林6  // 54和56起始点相同
-		Path_Point.point.fpX = -1850.f;
-		Path_Point.point.fpY = -2830.f;
+		Path_Point.point.fpX = -1600.f;
+		Path_Point.point.fpY = -2980.f;
 		Path_Point.point.fpW = 180.f;
 		break;
 
-	case 100: // test 一区
-		Path_Point.point.fpX = -600.f;
-		Path_Point.point.fpY = -100.f;
-		Path_Point.point.fpW = 60.f;// 0.f
+	case 47: // 梅林4--->梅林7
+		Path_Point.point.fpX = -2370.f;
+		Path_Point.point.fpY = -2920.f;
+		Path_Point.point.fpW = 90.f;
+		break;
+
+	case 45: // 梅林4--->梅林5
+		Path_Point.point.fpX = -2240.f;
+		Path_Point.point.fpY = -1730.f;
+		Path_Point.point.fpW = 0.f;
+		break;
+
+	case 69: // 梅林6--->梅林9
+		Path_Point.point.fpX = -420.f;
+		Path_Point.point.fpY = -3480.f;
+		Path_Point.point.fpW = -90.f;
+		break;
+
+	case 70: // 梅林7--->梅林10
+		Path_Point.point.fpX = -2850.f;
+		Path_Point.point.fpY = -4620.f;
+		Path_Point.point.fpW = -90.f;
+		break;
+
+	case 87: // 梅林8--->梅林7
+		Path_Point.point.fpX = -1660.f;
+		Path_Point.point.fpY = -4190.f;
+		Path_Point.point.fpW = 180.f;
+		break;
+
+	case 89: // 梅林8--->梅林9
+		Path_Point.point.fpX = -1130.f;
+		Path_Point.point.fpY = -4190.f;
+		Path_Point.point.fpW = 0.f;
+		break;
+
+	case 81: // 梅林8--->梅林11
+		Path_Point.point.fpX = -1590.f;
+		Path_Point.point.fpY = -4650.f;
+		Path_Point.point.fpW = -90.f;
+		break;
+
+	case 92: // 梅林9--->梅林12
+		Path_Point.point.fpX = -385.f;
+		Path_Point.point.fpY = -4690.f;
+		Path_Point.point.fpW = -90.f;
+		break;
+
+	case 100: // 梅林10--->对抗区
+		Path_Point.point.fpX = -2860.f;
+		Path_Point.point.fpY = -5820.f;
+		Path_Point.point.fpW = -90.f;
+		break;
+
+	case 120: // 梅林12--->对抗区
+		Path_Point.point.fpX = -400.f;
+		Path_Point.point.fpY = -5880.f;
+		Path_Point.point.fpW = -90.f;
+		break;
+
+	case 112: // 梅林11--->梅林12
+		Path_Point.point.fpX = -1190.f;
+		Path_Point.point.fpY = -5870.f;
+		Path_Point.point.fpW = 0.f;
+		break;
+
+	case 110: // 梅林11--->梅林10
+		Path_Point.point.fpX = -1690.f;
+		Path_Point.point.fpY = -5390.f;
+		Path_Point.point.fpW = 180.f;
 		break;
 
 	default:
@@ -1137,14 +1402,15 @@ void Point_to_Point(PATH_POINT *p_point)
 		flag_point_end = 1;
 		point_tim = 0;
 	}
-	if (flag_point_end && point_tim >= 300){
+	if (flag_point_end && point_tim >= 300)
+	{
 		flag_lock = 1;
 		nav.nav_state = NAV_LOCK;
 		nav.auto_path.pos_pid.x.fpSumE = 0;
 		nav.auto_path.pos_pid.y.fpSumE = 0;
 		nav.auto_path.pos_pid.w.fpSumE = 0;
 		flag_point_end = 0;
-		flag_point_to_point = 1;
+		// flag_point_to_point = 1;
 	}
 
 	//    nav.auto_path.pos_pid.td_x.aim = p_point->point.fpX;
@@ -1164,5 +1430,5 @@ void Point_to_Point(PATH_POINT *p_point)
 	nav.expect_robot_global_velt.fpX = nav.auto_path.pos_pid.x.fpU;
 	nav.expect_robot_global_velt.fpY = nav.auto_path.pos_pid.y.fpU;
 	nav.expect_robot_global_velt.fpW = nav.auto_path.pos_pid.w.fpU / 180.f * PI;
-	//nav.expect_robot_global_velt.fpW = 0.f;
+	// nav.expect_robot_global_velt.fpW = 0.f;
 }

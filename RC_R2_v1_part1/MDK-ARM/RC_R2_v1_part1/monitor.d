@@ -8,7 +8,7 @@ rc_r2_v1_part1\monitor.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.
 rc_r2_v1_part1\monitor.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
 rc_r2_v1_part1\monitor.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h
 rc_r2_v1_part1\monitor.o: ../Drivers/CMSIS/Include/core_cm4.h
-rc_r2_v1_part1\monitor.o: D:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+rc_r2_v1_part1\monitor.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 rc_r2_v1_part1\monitor.o: ../Drivers/CMSIS/Include/cmsis_version.h
 rc_r2_v1_part1\monitor.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
 rc_r2_v1_part1\monitor.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
@@ -16,7 +16,7 @@ rc_r2_v1_part1\monitor.o: ../Drivers/CMSIS/Include/mpu_armv7.h
 rc_r2_v1_part1\monitor.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h
 rc_r2_v1_part1\monitor.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 rc_r2_v1_part1\monitor.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h
-rc_r2_v1_part1\monitor.o: D:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stddef.h
+rc_r2_v1_part1\monitor.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
 rc_r2_v1_part1\monitor.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h
 rc_r2_v1_part1\monitor.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h
 rc_r2_v1_part1\monitor.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio_ex.h
@@ -34,5 +34,5 @@ rc_r2_v1_part1\monitor.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.
 rc_r2_v1_part1\monitor.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 rc_r2_v1_part1\monitor.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 rc_r2_v1_part1\monitor.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
-rc_r2_v1_part1\monitor.o: D:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdbool.h
-rc_r2_v1_part1\monitor.o: D:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\math.h
+rc_r2_v1_part1\monitor.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+rc_r2_v1_part1\monitor.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h

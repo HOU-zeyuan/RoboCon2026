@@ -1,8 +1,8 @@
 rc_r2_v1_part1\cmsis_os2.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c
-rc_r2_v1_part1\cmsis_os2.o: D:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
+rc_r2_v1_part1\cmsis_os2.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 rc_r2_v1_part1\cmsis_os2.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h
-rc_r2_v1_part1\cmsis_os2.o: D:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
-rc_r2_v1_part1\cmsis_os2.o: D:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stddef.h
+rc_r2_v1_part1\cmsis_os2.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+rc_r2_v1_part1\cmsis_os2.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
 rc_r2_v1_part1\cmsis_os2.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
 rc_r2_v1_part1\cmsis_os2.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
 rc_r2_v1_part1\cmsis_os2.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h

@@ -1,20 +1,20 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * File Name          : freertos.c
-  * Description        : Code for freertos applications
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2025 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * File Name          : freertos.c
+ * Description        : Code for freertos applications
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2025 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
@@ -35,7 +35,7 @@
 #include "chassis.h"
 #include "foot.h"
 #include "board_communicate.h"
-#include "vofa.h"
+//#include "vofa.h"
 #include "vision.h"
 #include "action.h"
 /* USER CODE END Includes */
@@ -173,24 +173,24 @@ void MX_FREERTOS_Init(void) {
 
 /* USER CODE BEGIN Header_TASK1 */
 /**
-  * @brief  Function implementing the Task1 thread.
-  * @param  argument: Not used
-  * @retval None
-  */
+ * @brief  Function implementing the Task1 thread.
+ * @param  argument: Not used
+ * @retval None
+ */
 /* USER CODE END Header_TASK1 */
 void TASK1(void *argument)
 {
   /* USER CODE BEGIN TASK1 */
-  
+
   /* Infinite loop */
-  for(;;)
+  for (;;)
   {
     monitor.rate_cnt.task1++;
     Foot_WorkLoop();
 
     J60_LOOP_CONTROL(&hcan2, &j60_motor_cmd_down, foot.down_aim_angle, 0, foot_g_feedforward.down, j60_motor_cmd_down.kp_, j60_motor_cmd_down.kd_, &j60_motor_data_down);
-
     GO1_Tx(&go1_send_left, &huart2, foot.leftup_aim_angle, 0, foot_g_feedforward.leftup, go1_send_left.K_P, go1_send_left.K_W);
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, 1);
     GO1_Tx(&go1_send_right, &huart4, foot.rightup_aim_angle, 0, foot_g_feedforward.rightup, go1_send_right.K_P, go1_send_right.K_W);
 
     osDelay(pdMS_TO_TICKS(1));
@@ -200,20 +200,20 @@ void TASK1(void *argument)
 
 /* USER CODE BEGIN Header_TASK2 */
 /**
-* @brief Function implementing the Task2 thread.
-* @param argument: Not used
-* @retval None
-*/
+ * @brief Function implementing the Task2 thread.
+ * @param argument: Not used
+ * @retval None
+ */
 /* USER CODE END Header_TASK2 */
 void TASK2(void *argument)
 {
   /* USER CODE BEGIN TASK2 */
   /* Infinite loop */
-  for(;;)
+  for (;;)
   {
-      monitor.rate_cnt.task2++;
-      Navigate_Task();    
-      
+    monitor.rate_cnt.task2++;
+    Navigate_Task();
+
     osDelay(pdMS_TO_TICKS(1));
   }
   /* USER CODE END TASK2 */
@@ -221,20 +221,19 @@ void TASK2(void *argument)
 
 /* USER CODE BEGIN Header_TASK3 */
 /**
-* @brief Function implementing the Task3 thread.
-* @param argument: Not used
-* @retval None
-*/
+ * @brief Function implementing the Task3 thread.
+ * @param argument: Not used
+ * @retval None
+ */
 /* USER CODE END Header_TASK3 */
 void TASK3(void *argument)
 {
   /* USER CODE BEGIN TASK3 */
   /* Infinite loop */
-  for(;;)
+  for (;;)
   {
     monitor.rate_cnt.task3++;
-		Drive_Chassis();
-
+    Drive_Chassis();
     osDelay(pdMS_TO_TICKS(1));
   }
   /* USER CODE END TASK3 */
@@ -242,19 +241,25 @@ void TASK3(void *argument)
 
 /* USER CODE BEGIN Header_TASK4 */
 /**
-* @brief Function implementing the Task4 thread.
-* @param argument: Not used
-* @retval None
-*/
+ * @brief Function implementing the Task4 thread.
+ * @param argument: Not used
+ * @retval None
+ */
 /* USER CODE END Header_TASK4 */
 void TASK4(void *argument)
 {
   /* USER CODE BEGIN TASK4 */
   /* Infinite loop */
-  for(;;)
+  for (;;)
   {
     monitor.rate_cnt.task4++;
     Vision_Transmit();
+
+    Upper_Lower_Communication();
+
+//    VOFA_pack_data();
+//    VOFA_transmit_data(vofa, 20);
+
     osDelay(pdMS_TO_TICKS(1));
   }
   /* USER CODE END TASK4 */
@@ -262,48 +267,27 @@ void TASK4(void *argument)
 
 /* USER CODE BEGIN Header_TASK5 */
 /**
-* @brief Function implementing the Task5 thread.
-* @param argument: Not used
-* @retval None
-*/
+ * @brief Function implementing the Task5 thread.
+ * @param argument: Not used
+ * @retval None
+ */
 /* USER CODE END Header_TASK5 */
 void TASK5(void *argument)
 {
   /* USER CODE BEGIN TASK5 */
   /* Infinite loop */
-  for(;;)
+  for (;;)
   {
     monitor.rate_cnt.task5++;
-    Upper_Lower_Communication();
-		
-    VOFA_pack_data();
-    VOFA_transmit_data(vofa, 20);
 
-    osDelay(pdMS_TO_TICKS(1));
-  }
-  /* USER CODE END TASK5 */
-}
-
-/* USER CODE BEGIN Header_TASK6 */
-/**
-* @brief Function implementing the Task6 thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_TASK6 */
-void TASK6(void *argument)
-{
-  /* USER CODE BEGIN TASK6 */
-  /* Infinite loop */
-  for(;;)
-  {
-    monitor.rate_cnt.task6++;
-    if (!NRF24L01_Check() && !FLAG_NRF){
+    if (!NRF24L01_Check() && !FLAG_NRF)
+    {
       NRF24L01_RX_Mode();
       FLAG_NRF = 1;
     }
 
-    if (FLAG_NRF == 1){
+    if (FLAG_NRF == 1)
+    {
       nRF24L01_ack_pay.Ack_Channel = 0;
       nRF24L01_ack_pay.Ack_Status = 3;
       nRF24L01_ack_pay.Ack_Len = ACK_PLOAD_WIDTH;
@@ -315,15 +299,39 @@ void TASK6(void *argument)
       NRF24L01_Rx_AckPayload(nRF24L01_ack_pay);
 
       time_cnt = tim_ms;
-      if (time_cnt - time_cnt_pre >= 1000){
+      if (time_cnt - time_cnt_pre >= 1000)
+      {
         NRF24L01_RX_Mode();
         time_cnt_pre = time_cnt;
       }
     }
 
-//     Part0_INIT();
-//		 Part1_action();
-//		 Part2_123_action();
+    osDelay(pdMS_TO_TICKS(3));
+  }
+  /* USER CODE END TASK5 */
+}
+
+/* USER CODE BEGIN Header_TASK6 */
+/**
+ * @brief Function implementing the Task6 thread.
+ * @param argument: Not used
+ * @retval None
+ */
+/* USER CODE END Header_TASK6 */
+void TASK6(void *argument)
+{
+  /* USER CODE BEGIN TASK6 */
+  /* Infinite loop */
+  for (;;)
+  {
+    monitor.rate_cnt.task6++;
+    
+    Part0_INIT();
+		Part2_begin();
+    Part1_action();
+    Part2_123_action();
+    Part2_action();
+      //Part3_action();
 
     osDelay(pdMS_TO_TICKS(1));
   }

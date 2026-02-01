@@ -1,7 +1,7 @@
 #include "navigate.h"
 
 void Navigate_Task()
-{   
+{
     switch (nav.nav_state)
     {
     case CHASSIS_INIT: // 初始化，舵轮转向电机速度环转一圈找零点
@@ -106,7 +106,7 @@ void Navigate_Task()
         rightup_turn_motor.ControlLoop_State = MULTIPLE_LOOP;
         leftdown_turn_motor.ControlLoop_State = MULTIPLE_LOOP;
         rightdown_turn_motor.ControlLoop_State = MULTIPLE_LOOP;
-        CalculateVelocities(&Js_Value, &nav, 200, 10000, 200, 10000, 200, 240); // 线速度：mm/s 角速度：度/s
+        CalculateVelocities(&Js_Value, &nav, 200, 1500, 200, 1500, 200, 150); // 线速度：mm/s 角速度：度/s
         ramp_signal(&nav.expect_robot_global_velt.fpX, nav.auto_path.basic_velt.fpVx, LineAccelStep);
         ramp_signal(&nav.expect_robot_global_velt.fpY, nav.auto_path.basic_velt.fpVy, LineAccelStep);
         nav.expect_robot_global_velt.fpW = nav.auto_path.basic_velt.fpW / 180.f * PI;
@@ -167,6 +167,11 @@ void Navigate_Task()
             path_point_choose(&nav);
             flag_point_to_point = 0;
         }
+        if (flag_point_block)
+        {
+            path_get_block(&nav);
+            flag_point_block = 0;
+        }
         Point_to_Point(&Path_Point);
         SpeedDistribute_Four_SteeringWheel(&nav);
         break;
@@ -178,23 +183,23 @@ void Navigate_Task()
         {
             SET_NAV_PATH_PERMUTATION();
 
-            // nav.auto_path.pos_pid.x.fpU = 0;
-            // nav.auto_path.pos_pid.y.fpU = 0;
-            // nav.auto_path.pos_pid.w.fpU = 0;
+            nav.auto_path.pos_pid.x.fpU = 0;
+            nav.auto_path.pos_pid.y.fpU = 0;
+            nav.auto_path.pos_pid.w.fpU = 0;
 
-            // nav.auto_path.pos_pid.x.fpDes = nav.auto_path.pos_pid.x.fpFB;
-            // nav.auto_path.pos_pid.y.fpDes = nav.auto_path.pos_pid.y.fpFB;
-            // nav.auto_path.pos_pid.w.fpDes = nav.auto_path.pos_pid.w.fpFB;
+            //							nav.auto_path.pos_pid.x.fpDes =nav.auto_path.pos_pid.x.fpFB;
+            //							nav.auto_path.pos_pid.y.fpDes =nav.auto_path.pos_pid.y.fpFB;
+            //							nav.auto_path.pos_pid.w.fpDes =nav.auto_path.pos_pid.w.fpFB;
 
             flag_lock = 0;
         }
-        // PID_Calc_Pos(&nav.auto_path.pos_pid.x);
-        // PID_Calc_Pos(&nav.auto_path.pos_pid.y);
-        // PID_Calc_Pos(&nav.auto_path.pos_pid.w);
-
-        // nav.expect_robot_global_velt.fpX = nav.auto_path.pos_pid.x.fpU;
-        // nav.expect_robot_global_velt.fpY = nav.auto_path.pos_pid.y.fpU;
-        // nav.expect_robot_global_velt.fpW = nav.auto_path.pos_pid.w.fpU * PI / 180.0f;
+        //						PID_Calc_Pos(&nav.auto_path.pos_pid.x);
+        //						PID_Calc_Pos(&nav.auto_path.pos_pid.y);
+        //						PID_Calc_Pos(&nav.auto_path.pos_pid.w);
+        //
+        //						nav.expect_robot_global_velt.fpX = nav.auto_path.pos_pid.x.fpU ;
+        //						nav.expect_robot_global_velt.fpY = nav.auto_path.pos_pid.y.fpU ;
+        //						nav.expect_robot_global_velt.fpW = nav.auto_path.pos_pid.w.fpU*PI/180.0f ;
 
         nav.expect_robot_global_velt.fpX = 0;
         nav.expect_robot_global_velt.fpY = 0;
@@ -202,7 +207,6 @@ void Navigate_Task()
 
         SpeedDistribute_Four_SteeringWheel(&nav);
         break;
-        
     default:
         break;
     }
